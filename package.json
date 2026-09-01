@@ -9,6 +9,9 @@
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
+    "@iconify-icons/material-symbols": "^2.0.1",
+    "@iconify-icons/noto": "^2.0.0",
+    "@iconify/react": "^6.0.2",
     "hono": "^4.13.5"
   },
   "devDependencies": {
