@@ -88,7 +88,7 @@ export const HomePage: FC = () => {
             </div>
             <div className="profile-right">
               <div className="xp-pill">
-                <Icon icon={Icons.star} size={16} color="#ffd166" />
+                <Icon icon={Icons.star} size={16} color="#fcd34d" />
                 <span>Supernova Rank: Silver</span>
               </div>
             </div>
@@ -97,12 +97,12 @@ export const HomePage: FC = () => {
           {/* Hero Mission Spotlight */}
           <div className="hero-cockpit-card">
             <div className="badge-pill">
-              <Icon icon={Icons.sparkles} size={16} color="#00f0ff" />
+              <Icon icon={Icons.sparkles} size={16} color="#7ee7c9" />
               <span>Cosmic Learning Universe for Ages 4–12</span>
             </div>
 
             <h1 className="hero-title">
-              Where Curious Minds <span className="text-gradient-cyan glow-text-cyan">Solve</span>, <span className="text-gradient-cosmic glow-text-pink">Explore</span> & Conquer the Cosmos! 🚀
+              Where Curious Minds <span className="text-gradient-cyan">Solve</span>, <span className="text-gradient-cosmic">Explore</span> & Conquer the Cosmos! 🚀
             </h1>
 
             <p className="hero-description">
@@ -116,7 +116,7 @@ export const HomePage: FC = () => {
               </button>
               <button className="btn-secondary" onclick="window.switchMainTab('journey')">
                 <span>View Star Map</span>
-                <Icon icon={Icons.star} size={18} color="#ff2a85" />
+                <Icon icon={Icons.star} size={18} color="#c084fc" />
               </button>
             </div>
 
@@ -147,7 +147,7 @@ export const HomePage: FC = () => {
               <span className="reward-badge">+50 XP</span>
             </div>
 
-            <h3 className="challenge-main-title text-gradient-cyan">COSMIC PUZZLE: THE GALAXY VORTEX</h3>
+            <h3 className="challenge-main-title">COSMIC PUZZLE: THE GALAXY VORTEX</h3>
             <p className="challenge-desc">
               Decipher the starry planetary vortex and align the cosmic constellation nodes to unlock the Nebula Gates!
             </p>
@@ -173,19 +173,19 @@ export const HomePage: FC = () => {
             <h4 className="strip-title">Jump to Mission Arenas</h4>
             <div className="quick-access-grid">
               <div className="access-chip chip-cyan" onclick="window.switchMainTab('games'); window.switchArcadeTab('memory');">
-                <Icon icon={Icons.brain} size={22} color="#00f0ff" />
+                <Icon icon={Icons.brain} size={22} color="#7ee7c9" />
                 <span>Memory Match</span>
               </div>
               <div className="access-chip chip-pink" onclick="window.switchMainTab('games'); window.switchArcadeTab('quiz');">
-                <Icon icon={Icons.quiz} size={22} color="#ff2a85" />
+                <Icon icon={Icons.quiz} size={22} color="#c084fc" />
                 <span>Quiz Whiz</span>
               </div>
               <div className="access-chip chip-gold" onclick="window.switchMainTab('games'); window.switchArcadeTab('pattern');">
-                <Icon icon={Icons.shapes} size={22} color="#ffd166" />
+                <Icon icon={Icons.shapes} size={22} color="#fcd34d" />
                 <span>Pattern Pals</span>
               </div>
               <div className="access-chip chip-purple" onclick="window.switchMainTab('journey');">
-                <Icon icon={Icons.treasureChest} size={22} color="#9d4edd" />
+                <Icon icon={Icons.treasureChest} size={22} color="#a78bfa" />
                 <span>Riddle Quest</span>
               </div>
             </div>
@@ -774,9 +774,9 @@ export const HomePage: FC = () => {
                 x: Math.random() * width,
                 y: Math.random() * height,
                 radius: Math.random() * 1.5 + 0.4,
-                alpha: Math.random() * 0.8 + 0.2,
+                alpha: Math.random() * 0.7 + 0.15,
                 twinkleSpeed: (Math.random() * 0.02 + 0.005) * (Math.random() > 0.5 ? 1 : -1),
-                color: Math.random() > 0.7 ? '#00f0ff' : (Math.random() > 0.5 ? '#ff2a85' : '#ffffff')
+                color: Math.random() > 0.7 ? '#7ee7c9' : (Math.random() > 0.5 ? '#c084fc' : '#ffffff')
               });
             }
 
