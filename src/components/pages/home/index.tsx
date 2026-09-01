@@ -2,6 +2,7 @@ import type { FC } from 'hono/jsx'
 import { raw } from 'hono/html'
 import { Icon } from '../../ui/icon'
 import { Icons } from '../../ui/icons'
+import { Header } from '../../common'
 
 export const HomePage: FC = () => {
   return (
@@ -12,36 +13,8 @@ export const HomePage: FC = () => {
       <div className="cosmic-nebula-2"></div>
       <div className="cosmic-nebula-3"></div>
 
-      {/* Top Header / App Bar */}
-      <header className="site-header">
-        <div className="header-inner">
-          <a href="#" className="logo-link" onclick="window.switchMainTab('hq'); return false;">
-            <div className="logo-icon-wrap">
-              <Icon icon={Icons.rocketLaunch} size={22} color="#00f0ff" />
-            </div>
-            <div className="logo-text">
-              <span className="logo-title">NEON <span>ACTIVITIES</span></span>
-              <span className="logo-subtitle">Kids Brain HQ 🚀</span>
-            </div>
-          </a>
-
-          <div className="header-actions">
-            <div className="header-streak-badge" title="Active Daily Streak">
-              <span className="streak-fire">🔥</span>
-              <span className="streak-count">7 Days</span>
-            </div>
-
-            <button id="audioToggleBtn" className="btn-audio" title="Toggle Cosmic Sound FX" aria-label="Toggle Sound">
-              <span id="audioIcon">🔊</span>
-            </button>
-
-            <a href="#download" className="btn-header-cta" onclick="window.switchMainTab('parents');">
-              <Icon icon={Icons.sparkles} size={16} />
-              <span>Get App</span>
-            </a>
-          </div>
-        </div>
-      </header>
+      {/* Global Top Header with Hamburger, Centered Logo, and Right User Info */}
+      <Header />
 
       {/* Central Max-Width App Shell for Tablet & Desktop */}
       <main className="cosmic-app-container">
@@ -950,6 +923,33 @@ export const HomePage: FC = () => {
 
             playSynthSound('flip');
           };
+
+          // ==========================================
+          // Slide-out Navigation Drawer Handlers
+          // ==========================================
+          window.openDrawer = function() {
+            const drawer = document.getElementById('navDrawer');
+            const backdrop = document.getElementById('drawerBackdrop');
+            if (drawer) drawer.classList.add('open');
+            if (backdrop) backdrop.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            playSynthSound('flip');
+          };
+
+          window.closeDrawer = function() {
+            const drawer = document.getElementById('navDrawer');
+            const backdrop = document.getElementById('drawerBackdrop');
+            if (drawer) drawer.classList.remove('open');
+            if (backdrop) backdrop.classList.remove('open');
+            document.body.style.overflow = '';
+            playSynthSound('flip');
+          };
+
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+              window.closeDrawer();
+            }
+          });
 
           // ==========================================
           // Mini-Game 1: Cosmic Quiz Whiz Engine
