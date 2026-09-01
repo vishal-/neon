@@ -18,58 +18,6 @@ export const HomePage: FC = () => {
 
       {/* Central Max-Width App Shell for Tablet & Desktop */}
       <main className="cosmic-app-container">
-        {/* Desktop Tab Selector Bar (Constrained Max-Width Shell) */}
-        <nav className="desktop-tab-bar" aria-label="Main Cosmic Navigation">
-          <button 
-            className="main-tab-btn active" 
-            id="tabNav-hq" 
-            data-tab="hq"
-            onclick="window.switchMainTab('hq')"
-          >
-            <Icon icon={Icons.rocketLaunch} size={18} />
-            <span>HQ & Daily</span>
-          </button>
-          
-          <button 
-            className="main-tab-btn" 
-            id="tabNav-games" 
-            data-tab="games"
-            onclick="window.switchMainTab('games')"
-          >
-            <Icon icon={Icons.gamepad} size={18} />
-            <span>Game Arenas</span>
-          </button>
-
-          <button 
-            className="main-tab-btn" 
-            id="tabNav-journey" 
-            data-tab="journey"
-            onclick="window.switchMainTab('journey')"
-          >
-            <Icon icon={Icons.star} size={18} />
-            <span>Star Journey</span>
-          </button>
-
-          <button 
-            className="main-tab-btn" 
-            id="tabNav-inclusive" 
-            data-tab="inclusive"
-            onclick="window.switchMainTab('inclusive')"
-          >
-            <Icon icon={Icons.inclusiveHands} size={18} />
-            <span>Inclusive Play</span>
-          </button>
-
-          <button 
-            className="main-tab-btn" 
-            id="tabNav-parents" 
-            data-tab="parents"
-            onclick="window.switchMainTab('parents')"
-          >
-            <Icon icon={Icons.shieldCheck} size={18} />
-            <span>Parent Hub</span>
-          </button>
-        </nav>
 
         {/* ========================================================= */}
         {/* TAB PANEL 1: HQ & DAILY QUEST (HERO + VORTEX)              */}

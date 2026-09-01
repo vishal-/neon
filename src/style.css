@@ -819,11 +819,6 @@ body {
   flex: 1;
 }
 
-/* Desktop Tab Bar: Hidden on Mobile by default */
-.desktop-tab-bar {
-  display: none;
-}
-
 /* Tab Panels */
 .tab-panel {
   display: none;
@@ -2289,50 +2284,6 @@ body.sensory-calm-active .cosmic-nebula-3 {
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     overflow: hidden;
-  }
-
-  .desktop-tab-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 12px 18px;
-    background: #080d1a;
-    border-bottom: 1px solid var(--border-card);
-    position: sticky;
-    top: var(--header-height);
-    z-index: 50;
-    backdrop-filter: blur(16px);
-  }
-
-  .main-tab-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: transparent;
-    border: 1px solid transparent;
-    color: var(--text-secondary);
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 0.92rem;
-    padding: 10px 14px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    white-space: nowrap;
-  }
-
-  .main-tab-btn:hover {
-    color: var(--text-white);
-    background: rgba(255, 255, 255, 0.04);
-  }
-
-  .main-tab-btn.active {
-    background: var(--color-teal-bg);
-    border-color: var(--color-teal-border);
-    color: var(--color-teal);
   }
 
   .tab-panel {

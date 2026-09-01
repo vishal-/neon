@@ -52,15 +52,6 @@ export const Header: FC<HeaderProps> = () => {
                 <span className="user-level-mini" id="headerUserSub">Email OTP</span>
               </div>
             </div>
-
-            <a 
-              href="#download" 
-              className="btn-header-cta" 
-              onclick="window.switchMainTab('parents');"
-            >
-              <Icon icon={Icons.sparkles} size={15} />
-              <span>Get App</span>
-            </a>
           </div>
         </div>
       </header>
