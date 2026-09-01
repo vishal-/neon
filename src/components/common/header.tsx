@@ -1,6 +1,7 @@
 import type { FC } from 'hono/jsx'
 import { Icon } from '../ui/icon'
 import { Icons } from '../ui/icons'
+import { AuthModal } from './auth-modal'
 
 export interface HeaderProps {
   title?: string
@@ -40,15 +41,15 @@ export const Header: FC<HeaderProps> = () => {
             {/* Cadet User Profile / Login Button */}
             <div 
               className="header-user-badge" 
-              title="Explorer Cadet Profile" 
-              onclick="window.switchMainTab('hq');"
+              title="Sign in with Email OTP" 
+              onclick="window.openAuthModal();"
             >
               <div className="user-avatar-mini">
                 <Icon icon={Icons.astronautNoto} size={22} />
               </div>
               <div className="user-info-text">
-                <span className="user-name-mini">Alex 🧑‍🚀</span>
-                <span className="user-level-mini">Lvl 1</span>
+                <span className="user-name-mini" id="headerUserName">Sign In</span>
+                <span className="user-level-mini" id="headerUserSub">Email OTP</span>
               </div>
             </div>
 
@@ -215,6 +216,9 @@ export const Header: FC<HeaderProps> = () => {
           </div>
         </div>
       </aside>
+
+      {/* Better Auth Passwordless OTP Modal */}
+      <AuthModal />
     </>
   )
 }

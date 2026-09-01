@@ -1,11 +1,8 @@
 import { Hono } from 'hono'
-import type { D1Database } from '@cloudflare/workers-types'
-import { getDb, requestLogs } from '../db'
+import { getDb, requestLogs, type TursoEnv } from '../db'
 
 export type Env = {
-  Bindings: {
-    DB: D1Database
-  }
+  Bindings: TursoEnv
 }
 
 export const checkApi = new Hono<Env>()
@@ -14,19 +11,10 @@ export const checkApi = new Hono<Env>()
 checkApi.all('/', async (c) => {
   const method = c.req.method
   const timestamp = new Date().toISOString()
-  const db = getDb(c.env.DB)
+  const db = getDb(c.env)
 
   try {
-    // Ensure the table exists
-    await c.env.DB.prepare(
-      `CREATE TABLE IF NOT EXISTS request_logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        method TEXT NOT NULL,
-        timestamp TEXT NOT NULL
-      )`
-    ).run()
-
-    // Type-safe insert using Drizzle ORM
+    // Type-safe insert using Drizzle ORM with Turso
     const inserted = await db
       .insert(requestLogs)
       .values({
@@ -53,7 +41,7 @@ checkApi.all('/', async (c) => {
   } catch (err: any) {
     return c.json(
       {
-        error: 'Failed to record request log via Drizzle ORM',
+        error: 'Failed to record request log via Turso',
         message: err?.message || String(err),
         method,
         timestamp,

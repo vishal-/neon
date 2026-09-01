@@ -1,11 +1,22 @@
 import { Hono } from 'hono'
 import { renderer } from './renderer'
 import { HomePage } from './components/pages/home'
-import { checkApi, type Env } from './api/check'
+import { checkApi } from './api/check'
+import { createAuth, type AuthEnv } from './lib/auth'
 
-const app = new Hono<Env>()
+export type AppEnv = {
+  Bindings: AuthEnv
+}
 
-// API Routes
+const app = new Hono<AppEnv>()
+
+// Better Auth API Handler
+app.on(['POST', 'GET'], '/api/auth/**', (c) => {
+  const auth = createAuth(c.env)
+  return auth.handler(c.req.raw)
+})
+
+// Custom API Routes
 app.route('/api/check', checkApi)
 
 // Server-side Rendered Pages

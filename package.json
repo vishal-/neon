@@ -8,14 +8,19 @@
     "deploy": "$npm_execpath run build && wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@iconify-icons/material-symbols": "^2.0.1",
     "@iconify-icons/noto": "^2.0.0",
     "@iconify/react": "^6.0.2",
+    "@libsql/client": "^0.17.4",
+    "better-auth": "^1.7.2",
     "drizzle-orm": "^0.45.2",
-    "hono": "^4.13.5"
+    "hono": "^4.13.5",
+    "resend": "^6.25.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.44.0",
