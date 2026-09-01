@@ -736,9 +736,7 @@ export const HomePage: FC = () => {
         <div className="footer-inner">
           <div className="footer-brand">
             <div className="logo-link">
-              <div className="logo-icon-wrap">
-                <Icon icon={Icons.rocketLaunch} size={20} color="#00f0ff" />
-              </div>
+              <img src="/logo.png" alt="Neon Activities Logo" className="footer-logo-img" />
               <div className="logo-text">
                 <span className="logo-title">NEON <span>ACTIVITIES</span></span>
               </div>

@@ -30,27 +30,13 @@ export const Header: FC<HeaderProps> = () => {
           {/* MIDDLE: App Logo */}
           <div className="header-center">
             <a href="#" className="logo-link" onclick="window.switchMainTab('hq'); return false;">
-              <div className="logo-icon-wrap">
-                <Icon icon={Icons.rocketLaunch} size={22} color="#00f0ff" />
-              </div>
-              <div className="logo-text">
-                <span className="logo-title">NEON <span>ACTIVITIES</span></span>
-                <span className="logo-subtitle">Kids Brain HQ 🚀</span>
-              </div>
+              <img src="/logo.png" alt="Neon Activities Logo" className="header-logo-img" />
+              <span className="logo-title">NEON <span>ACTIVITIES</span></span>
             </a>
           </div>
 
           {/* RIGHT: Login & User Info */}
           <div className="header-right">
-            <button 
-              id="audioToggleBtn" 
-              className="btn-audio" 
-              title="Toggle Cosmic Sound FX" 
-              aria-label="Toggle Sound"
-            >
-              <span id="audioIcon">🔊</span>
-            </button>
-
             {/* Cadet User Profile / Login Button */}
             <div 
               className="header-user-badge" 
@@ -90,13 +76,8 @@ export const Header: FC<HeaderProps> = () => {
         {/* Drawer Header */}
         <div className="drawer-header">
           <div className="drawer-brand">
-            <div className="logo-icon-wrap">
-              <Icon icon={Icons.rocketLaunch} size={20} color="#00f0ff" />
-            </div>
-            <div className="logo-text">
-              <span className="logo-title">NEON <span>ACTIVITIES</span></span>
-              <span className="logo-subtitle">Navigation Hub 🌌</span>
-            </div>
+            <img src="/logo.png" alt="Neon Activities Logo" className="drawer-logo-img" />
+            <span className="logo-title">NEON <span>ACTIVITIES</span></span>
           </div>
 
           <button 
