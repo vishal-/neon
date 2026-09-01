@@ -6,16 +6,21 @@
     "build": "vite build",
     "preview": "$npm_execpath run build && vite preview",
     "deploy": "$npm_execpath run build && wrangler deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "db:generate": "drizzle-kit generate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@iconify-icons/material-symbols": "^2.0.1",
     "@iconify-icons/noto": "^2.0.0",
     "@iconify/react": "^6.0.2",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.13.5"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.44.0",
+    "@cloudflare/workers-types": "^5.20260901.1",
+    "drizzle-kit": "^0.31.10",
     "vite": "^8.1.4",
     "vite-ssr-components": "^0.6.1",
     "wrangler": "^4.110.0"
