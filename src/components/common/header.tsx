@@ -208,14 +208,6 @@ export const Header: FC<HeaderProps> = ({ onSwitchTab }) => {
               </button>
             </li>
             <li>
-              <button className="drawer-link-btn" onClick={() => handleTabClick('inclusive')}>
-                <div className="drawer-link-icon icon-purple">
-                  <Icon icon={Icons.inclusiveHands} size={18} />
-                </div>
-                <span>Inclusive & Sensory Play</span>
-              </button>
-            </li>
-            <li>
               <button className="drawer-link-btn" onClick={() => handleTabClick('parents')}>
                 <div className="drawer-link-icon icon-green">
                   <Icon icon={Icons.shieldCheck} size={18} />

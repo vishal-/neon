@@ -1,4 +1,4 @@
-import type { FC, CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 export interface IconData {
   body: string
@@ -8,7 +8,7 @@ export interface IconData {
   top?: number
 }
 
-interface IconProps {
+export interface IconProps {
   icon?: IconData | string
   className?: string
   size?: number | string
@@ -16,7 +16,13 @@ interface IconProps {
   style?: CSSProperties
 }
 
-export const Icon: FC<IconProps> = ({ icon, className = '', size = 24, color, style = {} }) => {
+export function Icon({
+  icon,
+  className = '',
+  size = 24,
+  color,
+  style = {},
+}: IconProps): ReactNode {
   if (!icon) return null
 
   if (typeof icon === 'string') {
