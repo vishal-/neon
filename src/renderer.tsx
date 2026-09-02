@@ -1,13 +1,14 @@
+import type { JSXNode } from 'hono/jsx'
 import { jsxRenderer } from 'hono/jsx-renderer'
 import { Link, ViteClient } from 'vite-ssr-components/hono'
 
 declare module 'hono' {
   interface ContextRenderer {
-    (content: string | Promise<string> | JSX.Element, props?: { title?: string }): Response | Promise<Response>
+    (content: string | Promise<string> | JSXNode, props?: { title?: string }): Response | Promise<Response>
   }
 }
 
-export const renderer = jsxRenderer(({ children, title }: { children: any; title?: string }) => {
+export const renderer = jsxRenderer(({ children, title }: { children?: any; title?: string }) => {
   const pageTitle = title || 'Neon Activities — The Cosmic Activity & Quiz App for Kids 🚀'
   return (
     <html lang="en">
