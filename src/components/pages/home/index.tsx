@@ -914,10 +914,26 @@ export const HomePage: FC = () => {
                   const userNameEl = document.getElementById('headerUserName');
                   const headerBadge = document.getElementById('headerUserBadgeLink');
                   const drawerName = document.querySelector('.drawer-cadet-name');
+                  const userGreeting = document.querySelector('.user-greeting');
                   const emailName = data.user.name || data.user.email.split('@')[0];
+                  const avatarUrl = 'https://api.dicebear.com/9.x/fun-emoji/svg?seed=' + encodeURIComponent(data.user.email.trim().toLowerCase());
+
                   if (userNameEl) userNameEl.textContent = emailName + ' 🧑‍🚀';
                   if (drawerName) drawerName.textContent = emailName + ' 🧑‍🚀';
-                  if (headerBadge) headerBadge.title = 'Signed in as ' + data.user.email;
+                  if (userGreeting) userGreeting.textContent = 'Welcome back, ' + emailName + '! 🧑‍🚀';
+                  if (headerBadge) {
+                    headerBadge.href = '/profile';
+                    headerBadge.title = 'View Cadet Profile (' + data.user.email + ')';
+                  }
+
+                  const userAvatarMini = document.querySelector('.user-avatar-mini');
+                  if (userAvatarMini) {
+                    userAvatarMini.innerHTML = '<img src="' + avatarUrl + '" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />';
+                  }
+                  const drawerAvatar = document.getElementById('drawerAvatarRing');
+                  if (drawerAvatar) {
+                    drawerAvatar.innerHTML = '<img src="' + avatarUrl + '" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />';
+                  }
                 }
               }
             } catch (e) {}

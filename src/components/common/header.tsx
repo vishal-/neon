@@ -82,9 +82,9 @@ export const Header: FC<HeaderProps> = () => {
         </div>
 
         {/* Drawer Cadet Profile Info Card */}
-        <div className="drawer-profile-box">
+        <a href="/profile" className="drawer-profile-box" title="View Cadet Profile Dossier" style={{ textDecoration: 'none', display: 'block', cursor: 'pointer' }}>
           <div className="drawer-profile-top">
-            <div className="avatar-ring-sm">
+            <div className="avatar-ring-sm" id="drawerAvatarRing">
               <Icon icon={Icons.astronautNoto} size={28} />
             </div>
             <div>
@@ -96,7 +96,7 @@ export const Header: FC<HeaderProps> = () => {
             <span>🔥 7 Day Streak</span>
             <span style={{ color: 'var(--neon-gold)' }}>★ Silver Rank</span>
           </div>
-        </div>
+        </a>
 
         {/* Drawer Navigation List */}
         <nav className="drawer-nav">
