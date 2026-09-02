@@ -35,9 +35,6 @@ export function createAuth(env?: AuthEnv) {
       env?.BETTER_AUTH_URL ||
       (typeof process !== 'undefined' ? process.env?.BETTER_AUTH_URL : '') ||
       'http://localhost:5173',
-    advanced: {
-      generateId: () => schema.uuidv7(),
-    },
     plugins: [
       emailOTP({
         async sendVerificationOTP({ email, otp, type }) {
