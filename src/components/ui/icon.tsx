@@ -1,5 +1,4 @@
-import type { FC } from 'hono/jsx'
-import { raw } from 'hono/html'
+import type { FC, CSSProperties } from 'react'
 
 export interface IconData {
   body: string
@@ -14,7 +13,7 @@ interface IconProps {
   className?: string
   size?: number | string
   color?: string
-  style?: Record<string, string | number>
+  style?: CSSProperties
 }
 
 export const Icon: FC<IconProps> = ({ icon, className = '', size = 24, color, style = {} }) => {
@@ -24,10 +23,16 @@ export const Icon: FC<IconProps> = ({ icon, className = '', size = 24, color, st
     return (
       <span
         className={`neon-icon ${className}`}
-        style={{ fontSize: typeof size === 'number' ? `${size}px` : size, color, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', ...style }}
-      >
-        {raw(icon)}
-      </span>
+        style={{
+          fontSize: typeof size === 'number' ? `${size}px` : size,
+          color,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          ...style,
+        }}
+        dangerouslySetInnerHTML={{ __html: icon }}
+      />
     )
   }
 
@@ -42,8 +47,7 @@ export const Icon: FC<IconProps> = ({ icon, className = '', size = 24, color, st
       height={size}
       className={`neon-icon ${className}`}
       style={{ display: 'inline-block', verticalAlign: 'middle', color, ...style }}
-    >
-      {raw(icon.body)}
-    </svg>
+      dangerouslySetInnerHTML={{ __html: icon.body }}
+    />
   )
 }
