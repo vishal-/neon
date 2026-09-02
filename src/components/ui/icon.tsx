@@ -1,4 +1,4 @@
-import type { CSSProperties, JSX } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 export interface IconData {
   body: string
@@ -22,7 +22,7 @@ export function Icon({
   size = 24,
   color,
   style = {},
-}: IconProps): JSX.Element | null {
+}: IconProps): ReactNode {
   if (!icon) return null
 
   if (typeof icon === 'string') {
