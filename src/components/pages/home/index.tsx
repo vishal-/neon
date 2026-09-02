@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react'
+import { useState, type FC } from 'react'
 import { Icon } from '../../ui/icon'
 import { Icons } from '../../ui/icons'
 import { Header } from '../../common'
@@ -45,7 +45,7 @@ const initialMemoryCards: MemoryCardItem[] = [
 ]
 
 export const HomePage: FC = () => {
-  const [activeTab, setActiveTab] = useState<'hq' | 'games' | 'journey' | 'inclusive' | 'parents'>('hq')
+  const [activeTab, setActiveTab] = useState<'hq' | 'games' | 'journey' | 'parents'>('hq')
   const [activeArcadeTab, setActiveArcadeTab] = useState<'quiz' | 'memory' | 'pattern'>('quiz')
 
   // Quiz Whiz State
@@ -62,21 +62,8 @@ export const HomePage: FC = () => {
   const [patternChoice, setPatternChoice] = useState<string | null>(null)
   const [patternSuccess, setPatternSuccess] = useState<boolean | null>(null)
 
-  // Assistive Modes
-  const [sensoryCalm, setSensoryCalm] = useState(false)
-  const [noRush, setNoRush] = useState(false)
-  const [voiceGuide, setVoiceGuide] = useState(false)
-
   // FAQ Accordion State
   const [openFaq, setOpenFaq] = useState<number | null>(0)
-
-  useEffect(() => {
-    if (sensoryCalm) {
-      document.body.classList.add('sensory-calm-active')
-    } else {
-      document.body.classList.remove('sensory-calm-active')
-    }
-  }, [sensoryCalm])
 
   // Quiz Handler
   const handleQuizAnswer = (selectedIndex: number) => {
@@ -198,7 +185,7 @@ export const HomePage: FC = () => {
 
               <p className="hero-description">
                 Turn screen time into a thrilling galactic journey. Daily logic labs, memory pair quests, astronomy
-                trivia, and sensory-friendly adventures crafted for growing young minds.
+                trivia, and fun space adventures crafted for growing young minds.
               </p>
 
               <div className="hero-action-buttons">
@@ -684,77 +671,7 @@ export const HomePage: FC = () => {
         )}
 
         {/* ========================================================= */}
-        {/* TAB PANEL 4: INCLUSIVE & SENSORY PLAY                      */}
-        {/* ========================================================= */}
-        {activeTab === 'inclusive' && (
-          <section className="tab-panel active" id="panel-inclusive">
-            <div className="section-head-box">
-              <span className="section-tag">Special Needs & Inclusive Design</span>
-              <h2 className="section-heading">
-                Every Child Deserves to <span className="text-gradient-cyan">Shine in Space</span> 🌟
-              </h2>
-              <p className="section-subtext">
-                Built from the ground up to be sensory-friendly and neurodiverse-welcoming with guidance from pediatric occupational therapists.
-              </p>
-            </div>
-
-            <div className="inclusive-grid">
-              <div className="inclusive-info-card">
-                <h3 className="card-inner-title text-gradient-cyan">Adaptive Pacing & Calm Visuals</h3>
-                <p className="card-inner-text">
-                  Traditional educational apps frequently induce anxiety with frantic countdown timers and sudden loud buzzer sounds. Neon Activities replaces pressure with soothing reinforcement, intuitive tactile guidance, and adaptable pacing.
-                </p>
-
-                <div className="inclusive-pills-wrap">
-                  <span className="inclusive-pill">✨ Calm Sensory Palette</span>
-                  <span className="inclusive-pill">⏱️ Zero-Timer Mode</span>
-                  <span className="inclusive-pill">📖 Dyslexia-Friendly Typography</span>
-                  <span className="inclusive-pill">🔊 Full Audio Narration</span>
-                  <span className="inclusive-pill">🖐️ Large Single-Finger Targets</span>
-                </div>
-              </div>
-
-              {/* Interactive Adaptive Mode Simulator */}
-              <div className="inclusive-interactive-card">
-                <div className="badge-pill" style={{ borderColor: 'var(--neon-pink)', color: 'var(--neon-pink)' }}>
-                  <Icon icon={Icons.inclusiveHands} size={16} color="#ff2a85" />
-                  <span>Live Assistive Simulator</span>
-                </div>
-                <h4 className="simulator-title">Test Assistive Modes</h4>
-                <p className="simulator-subtitle">Toggle real assistive modes built right into the app engine:</p>
-
-                <div className="inclusive-modes-list">
-                  <div className="mode-toggle-item" onClick={() => setSensoryCalm(!sensoryCalm)}>
-                    <div>
-                      <span className="mode-name">Sensory Calm Mode</span>
-                      <span className="mode-desc">Softens glow effects and slows down animations</span>
-                    </div>
-                    <div className={`mode-toggle-switch ${sensoryCalm ? 'active' : ''}`}></div>
-                  </div>
-
-                  <div className="mode-toggle-item" onClick={() => setNoRush(!noRush)}>
-                    <div>
-                      <span className="mode-name">No-Rush Relaxed Pacing</span>
-                      <span className="mode-desc">Disables all timed challenges completely</span>
-                    </div>
-                    <div className={`mode-toggle-switch ${noRush ? 'active' : ''}`}></div>
-                  </div>
-
-                  <div className="mode-toggle-item" onClick={() => setVoiceGuide(!voiceGuide)}>
-                    <div>
-                      <span className="mode-name">Voice Guided Narration</span>
-                      <span className="mode-desc">Reads out question text and hints aloud</span>
-                    </div>
-                    <div className={`mode-toggle-switch ${voiceGuide ? 'active' : ''}`}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ========================================================= */}
-        {/* TAB PANEL 5: PARENT HUB, SAFETY & DOWNLOAD                 */}
+        {/* TAB PANEL 4: PARENT HUB, SAFETY & DOWNLOAD                 */}
         {/* ========================================================= */}
         {activeTab === 'parents' && (
           <section className="tab-panel active" id="panel-parents">
@@ -815,13 +732,13 @@ export const HomePage: FC = () => {
                 <div className="review-card">
                   <div className="review-stars">★★★★★</div>
                   <p className="review-text">
-                    "As a special education teacher, finding apps that offer sensory-friendly modes without patronizing the kids is rare. Neon Activities nailed it!"
+                    "As a teacher, finding educational games that keep kids engaged without commercial distractions is rare. Neon Activities nailed it!"
                   </p>
                   <div className="reviewer-meta">
                     <div className="reviewer-avatar">⭐</div>
                     <div>
                       <div className="reviewer-name">Marcus Sterling</div>
-                      <div className="reviewer-role">Special Ed Specialist</div>
+                      <div className="reviewer-role">STEM Educator</div>
                     </div>
                   </div>
                 </div>
@@ -936,14 +853,6 @@ export const HomePage: FC = () => {
         </button>
 
         <button
-          className={`mob-nav-btn ${activeTab === 'inclusive' ? 'active' : ''}`}
-          onClick={() => handleSwitchTab('inclusive')}
-        >
-          <Icon icon={Icons.inclusiveHands} size={20} />
-          <span>Inclusive</span>
-        </button>
-
-        <button
           className={`mob-nav-btn ${activeTab === 'parents' ? 'active' : ''}`}
           onClick={() => handleSwitchTab('parents')}
         >
@@ -965,7 +874,7 @@ export const HomePage: FC = () => {
               </div>
             </div>
             <p className="footer-tagline">
-              The cosmic playground where cognitive growth, joyful exploration, and inclusive learning unite in radiant neon light.
+              The cosmic playground where cognitive growth, joyful exploration, and logic learning unite in radiant neon light.
             </p>
           </div>
 

@@ -11,9 +11,12 @@
       "DOM.Iterable"
     ],
     "types": [
-      "@cloudflare/workers-types",
       "vite/client"
     ],
-    "jsx": "react-jsx"
-  }
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": [
+    "src"
+  ]
 }
