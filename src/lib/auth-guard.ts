@@ -15,7 +15,7 @@ export const sessionMiddleware = createMiddleware<AppEnv>(async (c, next) => {
     })
     c.set('user', session?.user || null)
     c.set('session', session?.session || null)
-  } catch (e) {
+  } catch (_e) {
     c.set('user', null)
     c.set('session', null)
   }
@@ -40,7 +40,7 @@ export const authGuard = createMiddleware<AppEnv>(async (c, next) => {
     c.set('user', session.user)
     c.set('session', session.session)
     await next()
-  } catch (e) {
+  } catch (_e) {
     const redirectUrl = encodeURIComponent(c.req.path)
     return c.redirect(`/login?redirect=${redirectUrl}`)
   }

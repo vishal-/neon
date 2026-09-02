@@ -4,7 +4,7 @@ export interface OtpEmailProps {
   appName?: string
 }
 
-export function renderOtpEmail({ otp, email, appName = 'Neon Activities' }: OtpEmailProps): {
+export function renderOtpEmail({ otp, email: _email, appName = 'Neon Activities' }: OtpEmailProps): {
   subject: string
   html: string
   text: string

@@ -37,7 +37,7 @@ export function createAuth(env?: AuthEnv) {
       'http://localhost:5173',
     plugins: [
       emailOTP({
-        async sendVerificationOTP({ email, otp, type }) {
+        async sendVerificationOTP({ email, otp, type: _type }) {
           const { subject, html, text } = renderOtpEmail({
             otp,
             email,

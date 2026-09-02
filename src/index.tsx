@@ -83,7 +83,9 @@ app.post('/logout', async (c) => {
   try {
     const auth = createAuth(c.env)
     await auth.api.signOut({ headers: c.req.raw.headers })
-  } catch (e) {}
+  } catch (_e) {
+    // Session cleanup fallback
+  }
   return c.redirect('/login')
 })
 

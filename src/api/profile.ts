@@ -23,11 +23,6 @@ profileApi.get('/', async (c) => {
     return c.json({ error: 'Unauthorized', message: 'You must be signed in to view your profile' }, 401)
   }
 
-  const db = getDb(c.env)
-  const dbUser = await db.query?.user?.findFirst?.({
-    where: eq(userTable.id, session.user.id),
-  }) || session.user
-
   const email = session.user.email
   const avatarUrl = `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${encodeURIComponent(email.trim().toLowerCase())}`
 
