@@ -1,13 +1,36 @@
 import type { FC } from 'hono/jsx'
-import { raw } from 'hono/html'
 import { Icon } from '../../ui/icon'
 import { Icons } from '../../ui/icons'
 
-export const ProfilePage: FC = () => {
+export interface ProfilePageProps {
+  user: {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string | number
+  }
+  updated?: boolean
+  error?: string
+}
+
+export const ProfilePage: FC<ProfilePageProps> = ({ user, updated, error }) => {
+  const email = user.email || 'cadet@neonactivities.com'
+  const cadetName = user.name || email.split('@')[0]
+  const avatarUrl = `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${encodeURIComponent(email.trim().toLowerCase())}`
+
+  const memberSince = user.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })
+    : 'Today'
+
   return (
     <div className="page-wrapper profile-page-wrapper">
-      {/* Background Starfield Canvas and Ambient Nebulas */}
-      <canvas id="starfield"></canvas>
+      {/* Background Ambience */}
       <div className="cosmic-nebula-1"></div>
       <div className="cosmic-nebula-2"></div>
       <div className="cosmic-nebula-3"></div>
@@ -29,58 +52,31 @@ export const ProfilePage: FC = () => {
           </div>
 
           <div className="header-right">
-            <button 
-              id="headerSignOutBtn" 
-              className="btn-header-secondary btn-signout" 
-              onclick="window.handleSignOut();"
-              style={{ display: 'none' }}
-              title="Sign Out"
-            >
-              <Icon icon={Icons.login} size={16} />
-              <span>Sign Out</span>
-            </button>
+            <form method="POST" action="/logout" style={{ margin: 0 }}>
+              <button 
+                type="submit" 
+                className="btn-header-secondary btn-signout" 
+                title="Sign Out"
+              >
+                <Icon icon={Icons.login} size={16} />
+                <span>Sign Out</span>
+              </button>
+            </form>
           </div>
         </div>
       </header>
 
       {/* Main Profile Dossier Container */}
       <main className="profile-main-container">
-        {/* Loading State */}
-        <div id="profileLoadingCard" className="profile-card profile-loading-card">
-          <div className="profile-spinner"></div>
-          <p>Retrieving Cosmic Cadet Dossier...</p>
-        </div>
-
-        {/* Unauthorized / Not Signed In State */}
-        <div id="profileGuestCard" className="profile-card profile-guest-card" style={{ display: 'none' }}>
-          <div className="guest-avatar-wrapper">
-            <Icon icon={Icons.astronautNoto} size={54} />
-          </div>
-          <h2 className="profile-card-title">Cadet Login Required</h2>
-          <p className="profile-card-subtitle">
-            You must be logged in to view your cadet profile, saved statistics, and update your explorer name.
-          </p>
-          <div className="profile-action-row">
-            <a href="/login?redirect=/profile" className="btn-primary full-width">
-              <span>Sign In with Email</span>
-              <Icon icon={Icons.rocketLaunch} size={18} />
-            </a>
-            <a href="/" className="btn-secondary full-width">
-              <span>Return to Cosmic HQ</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Authenticated Profile Dossier Card */}
-        <div id="profileAuthCard" className="profile-card profile-auth-card" style={{ display: 'none' }}>
+        <div className="profile-card profile-auth-card">
           {/* Avatar & Header Section */}
           <div className="profile-top-section">
             <div className="profile-avatar-container">
               <div className="avatar-ring-glow"></div>
               <img 
                 id="profileAvatarImg" 
-                src="https://api.dicebear.com/9.x/fun-emoji/svg?seed=cosmic-explorer" 
-                alt="Cadet Fun Emoji Avatar" 
+                src={avatarUrl} 
+                alt={`${cadetName}'s Fun Emoji Avatar`} 
                 className="profile-avatar-large"
               />
               <div className="avatar-badge-tag" title="Dicebear Fun Emoji Avatar">
@@ -94,8 +90,8 @@ export const ProfilePage: FC = () => {
                 <span className="dot-sep">•</span>
                 <span className="verified-chip">✓ Verified Account</span>
               </div>
-              <h1 id="profileDisplayName" className="profile-user-name">Cadet Explorer</h1>
-              <p id="profileDisplayEmail" className="profile-user-email">explorer@neonactivities.com</p>
+              <h1 id="profileDisplayName" className="profile-user-name">{cadetName}</h1>
+              <p id="profileDisplayEmail" className="profile-user-email">{email}</p>
             </div>
           </div>
 
@@ -111,14 +107,16 @@ export const ProfilePage: FC = () => {
               </div>
             </div>
 
-            <form id="profileEditForm" className="profile-edit-form" onsubmit="window.handleSaveProfile(event);">
+            <form id="profileEditForm" className="profile-edit-form" method="POST" action="/profile">
               <div className="form-group">
                 <label htmlFor="inputCadetName" className="form-label">Cadet / Explorer Name</label>
                 <div className="input-row-inline">
                   <input 
                     id="inputCadetName" 
+                    name="name"
                     type="text" 
                     className="auth-input profile-input" 
+                    value={cadetName}
                     placeholder="Enter cadet name..." 
                     maxLength={50}
                     required 
@@ -129,7 +127,18 @@ export const ProfilePage: FC = () => {
                   </button>
                 </div>
               </div>
-              <div id="profileStatusMsg" className="auth-status-msg" aria-live="polite"></div>
+
+              {updated && (
+                <div className="auth-status-msg">
+                  <span className="status-success">✨ Cadet name updated successfully!</span>
+                </div>
+              )}
+
+              {error && (
+                <div className="auth-status-msg">
+                  <span className="status-error">⚠️ {error}</span>
+                </div>
+              )}
             </form>
           </div>
 
@@ -148,17 +157,17 @@ export const ProfilePage: FC = () => {
             <div className="dossier-grid">
               <div className="dossier-item">
                 <span className="dossier-label">EMAIL ADDRESS</span>
-                <span id="dossierEmail" className="dossier-value highlight">Loading...</span>
+                <span className="dossier-value highlight">{email}</span>
               </div>
 
               <div className="dossier-item">
                 <span className="dossier-label">CADET ID</span>
-                <span id="dossierUserId" className="dossier-value code">Loading...</span>
+                <span className="dossier-value code">{user.id.substring(0, 18)}...</span>
               </div>
 
               <div className="dossier-item">
                 <span className="dossier-label">MEMBER SINCE</span>
-                <span id="dossierCreatedAt" className="dossier-value">Today</span>
+                <span className="dossier-value">{memberSince}</span>
               </div>
 
               <div className="dossier-item">
@@ -184,254 +193,15 @@ export const ProfilePage: FC = () => {
               <Icon icon={Icons.rocketLaunch} size={18} />
               <span>Launch Missions</span>
             </a>
-            <button type="button" className="btn-secondary btn-signout-main" onclick="window.handleSignOut();">
-              <Icon icon={Icons.login} size={18} />
-              <span>Sign Out of HQ</span>
-            </button>
+            <form method="POST" action="/logout" style={{ flex: 1, margin: 0, display: 'flex' }}>
+              <button type="submit" className="btn-secondary btn-signout-main" style={{ width: '100%' }}>
+                <Icon icon={Icons.login} size={18} />
+                <span>Sign Out of HQ</span>
+              </button>
+            </form>
           </div>
         </div>
       </main>
-
-      {/* Client-side Profile Data Fetching & Updation */}
-      {raw(`
-        <script>
-          (function() {
-            // ==========================================
-            // Audio Web Audio API Sound Generator
-            // ==========================================
-            let audioCtx = null;
-            function getAudioContext() {
-              if (!audioCtx) {
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                if (AudioContextClass) audioCtx = new AudioContextClass();
-              }
-              if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-              }
-              return audioCtx;
-            }
-
-            function playSynthSound(type) {
-              try {
-                const ctx = getAudioContext();
-                if (!ctx) return;
-                const now = ctx.currentTime;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-
-                if (type === 'correct') {
-                  osc.type = 'sine';
-                  osc.frequency.setValueAtTime(587.33, now);
-                  osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
-                  gain.gain.setValueAtTime(0.18, now);
-                  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-                  osc.start(now);
-                  osc.stop(now + 0.35);
-                } else if (type === 'chest') {
-                  osc.type = 'triangle';
-                  osc.frequency.setValueAtTime(440, now);
-                  osc.frequency.setValueAtTime(554.37, now + 0.1);
-                  osc.frequency.setValueAtTime(659.25, now + 0.2);
-                  osc.frequency.setValueAtTime(880, now + 0.3);
-                  gain.gain.setValueAtTime(0.2, now);
-                  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-                  osc.start(now);
-                  osc.stop(now + 0.6);
-                } else if (type === 'wrong') {
-                  osc.type = 'sawtooth';
-                  osc.frequency.setValueAtTime(220, now);
-                  osc.frequency.linearRampToValueAtTime(110, now + 0.25);
-                  gain.gain.setValueAtTime(0.15, now);
-                  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-                  osc.start(now);
-                  osc.stop(now + 0.25);
-                }
-              } catch (e) {}
-            }
-
-            // ==========================================
-            // Starfield Animation
-            // ==========================================
-            const canvas = document.getElementById('starfield');
-            if (canvas) {
-              const ctx = canvas.getContext('2d');
-              let stars = [];
-              const numStars = 85;
-
-              function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                initStars();
-              }
-
-              function initStars() {
-                stars = [];
-                for (let i = 0; i < numStars; i++) {
-                  stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    radius: Math.random() * 1.5 + 0.4,
-                    alpha: Math.random() * 0.8 + 0.2,
-                    speed: Math.random() * 0.25 + 0.05,
-                    color: ['#ffffff', '#7ee7c9', '#bf8efd', '#facc15'][Math.floor(Math.random() * 4)]
-                  });
-                }
-              }
-
-              function renderStars() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < stars.length; i++) {
-                  const s = stars[i];
-                  s.y += s.speed;
-                  if (s.y > canvas.height) s.y = 0;
-                  ctx.beginPath();
-                  ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-                  ctx.fillStyle = s.color;
-                  ctx.globalAlpha = s.alpha;
-                  ctx.fill();
-                }
-                requestAnimationFrame(renderStars);
-              }
-
-              window.addEventListener('resize', resizeCanvas);
-              resizeCanvas();
-              renderStars();
-            }
-
-            // ==========================================
-            // Profile Data Loading & Session Management
-            // ==========================================
-            let currentUser = null;
-
-            function getDicebearAvatarUrl(email) {
-              const seed = (email || 'cosmic-explorer').trim().toLowerCase();
-              return 'https://api.dicebear.com/9.x/fun-emoji/svg?seed=' + encodeURIComponent(seed);
-            }
-
-            async function loadProfile() {
-              const loadingCard = document.getElementById('profileLoadingCard');
-              const guestCard = document.getElementById('profileGuestCard');
-              const authCard = document.getElementById('profileAuthCard');
-              const headerSignOutBtn = document.getElementById('headerSignOutBtn');
-
-              try {
-                const res = await fetch('/api/auth/get-session');
-                if (!res.ok) throw new Error('Not authenticated');
-
-                const data = await res.json();
-                if (!data || !data.user || !data.user.email) {
-                  throw new Error('No active session');
-                }
-
-                currentUser = data.user;
-
-                // Populate user profile info
-                const email = currentUser.email;
-                const name = currentUser.name || email.split('@')[0];
-                const avatarUrl = getDicebearAvatarUrl(email);
-
-                const avatarImg = document.getElementById('profileAvatarImg');
-                const displayName = document.getElementById('profileDisplayName');
-                const displayEmail = document.getElementById('profileDisplayEmail');
-                const inputCadetName = document.getElementById('inputCadetName');
-                const dossierEmail = document.getElementById('dossierEmail');
-                const dossierUserId = document.getElementById('dossierUserId');
-                const dossierCreatedAt = document.getElementById('dossierCreatedAt');
-
-                if (avatarImg) avatarImg.src = avatarUrl;
-                if (displayName) displayName.textContent = name;
-                if (displayEmail) displayEmail.textContent = email;
-                if (inputCadetName) inputCadetName.value = name;
-                if (dossierEmail) dossierEmail.textContent = email;
-                if (dossierUserId) dossierUserId.textContent = currentUser.id ? currentUser.id.substring(0, 18) + '...' : 'CADET-01';
-
-                if (currentUser.createdAt) {
-                  try {
-                    const date = new Date(currentUser.createdAt);
-                    if (dossierCreatedAt) dossierCreatedAt.textContent = date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-                  } catch (e) {}
-                }
-
-                if (loadingCard) loadingCard.style.display = 'none';
-                if (guestCard) guestCard.style.display = 'none';
-                if (authCard) authCard.style.display = 'flex';
-                if (headerSignOutBtn) headerSignOutBtn.style.display = 'inline-flex';
-
-              } catch (err) {
-                if (loadingCard) loadingCard.style.display = 'none';
-                if (authCard) authCard.style.display = 'none';
-                if (guestCard) guestCard.style.display = 'flex';
-                if (headerSignOutBtn) headerSignOutBtn.style.display = 'none';
-              }
-            }
-
-            window.handleSaveProfile = async function(e) {
-              e.preventDefault();
-              const inputCadetName = document.getElementById('inputCadetName');
-              const btn = document.getElementById('btnSaveName');
-              const statusMsg = document.getElementById('profileStatusMsg');
-              if (!inputCadetName || !currentUser) return;
-
-              const newName = inputCadetName.value.trim();
-              if (!newName) return;
-
-              if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<span>Saving...</span> 🚀';
-              }
-              if (statusMsg) statusMsg.innerHTML = '<span class="status-loading">Updating cadet name...</span>';
-
-              try {
-                const res = await fetch('/api/auth/update-user', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ name: newName })
-                });
-
-                if (!res.ok) {
-                  const errData = await res.json().catch(function() { return {}; });
-                  throw new Error(errData.message || 'Failed to update name');
-                }
-
-                currentUser.name = newName;
-                const displayName = document.getElementById('profileDisplayName');
-                if (displayName) displayName.textContent = newName;
-
-                if (statusMsg) statusMsg.innerHTML = '<span class="status-success">✨ Cadet name updated successfully!</span>';
-                playSynthSound('correct');
-
-                setTimeout(function() {
-                  if (statusMsg) statusMsg.innerHTML = '';
-                }, 3500);
-
-              } catch (err) {
-                if (statusMsg) statusMsg.innerHTML = '<span class="status-error">⚠️ ' + (err.message || 'Error updating name') + '</span>';
-                playSynthSound('wrong');
-              } finally {
-                if (btn) {
-                  btn.disabled = false;
-                  btn.innerHTML = '<span>Save Name</span> ✨';
-                }
-              }
-            };
-
-            window.handleSignOut = async function() {
-              if (!confirm('Are you sure you want to sign out from Cosmic HQ?')) return;
-
-              try {
-                await fetch('/api/auth/sign-out', { method: 'POST' });
-              } catch (e) {}
-
-              playSynthSound('flip');
-              window.location.href = '/login';
-            };
-
-            loadProfile();
-          })();
-        </script>
-      `)}
     </div>
   )
 }

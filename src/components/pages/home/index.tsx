@@ -918,8 +918,8 @@ export const HomePage: FC = () => {
                   const emailName = data.user.name || data.user.email.split('@')[0];
                   const avatarUrl = 'https://api.dicebear.com/9.x/fun-emoji/svg?seed=' + encodeURIComponent(data.user.email.trim().toLowerCase());
 
-                  if (userNameEl) userNameEl.textContent = emailName + ' 🧑‍🚀';
-                  if (drawerName) drawerName.textContent = emailName + ' 🧑‍🚀';
+                  if (userNameEl) userNameEl.textContent = emailName;
+                  if (drawerName) drawerName.textContent = emailName;
                   if (userGreeting) userGreeting.textContent = 'Welcome back, ' + emailName + '! 🧑‍🚀';
                   if (headerBadge) {
                     headerBadge.href = '/profile';

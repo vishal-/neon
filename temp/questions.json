@@ -1,0 +1,130 @@
+{
+  "quiz": {
+    "id": "quiz_seed_001",
+    "title": "Fun Kids Quiz",
+    "description": "A fun general-knowledge quiz for curious kids.",
+    "durationSeconds": 300,
+    "questions": [
+      {
+        "id": "q_001",
+        "question": "Which planet is known as the Red Planet?",
+        "points": 10,
+        "position": 1,
+        "options": [
+          { "id": "q_001_a", "text": "Earth", "isCorrect": false },
+          { "id": "q_001_b", "text": "Mars", "isCorrect": true },
+          { "id": "q_001_c", "text": "Jupiter", "isCorrect": false },
+          { "id": "q_001_d", "text": "Venus", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q_002",
+        "question": "How many legs does a spider have?",
+        "points": 10,
+        "position": 2,
+        "options": [
+          { "id": "q_002_a", "text": "6", "isCorrect": false },
+          { "id": "q_002_b", "text": "8", "isCorrect": true },
+          { "id": "q_002_c", "text": "10", "isCorrect": false },
+          { "id": "q_002_d", "text": "12", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q_003",
+        "question": "What is the largest ocean on Earth?",
+        "points": 10,
+        "position": 3,
+        "options": [
+          { "id": "q_003_a", "text": "Atlantic Ocean", "isCorrect": false },
+          { "id": "q_003_b", "text": "Indian Ocean", "isCorrect": false },
+          { "id": "q_003_c", "text": "Pacific Ocean", "isCorrect": true },
+          { "id": "q_003_d", "text": "Arctic Ocean", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q_004",
+        "question": "Which animal is known as the King of the Jungle?",
+        "points": 10,
+        "position": 4,
+        "options": [
+          { "id": "q_004_a", "text": "Tiger", "isCorrect": false },
+          { "id": "q_004_b", "text": "Elephant", "isCorrect": false },
+          { "id": "q_004_c", "text": "Lion", "isCorrect": true },
+          { "id": "q_004_d", "text": "Giraffe", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q_005",
+        "question": "How many days are there in a week?",
+        "points": 10,
+        "position": 5,
+        "options": [
+          { "id": "q_005_a", "text": "5", "isCorrect": false },
+          { "id": "q_005_b", "text": "6", "isCorrect": false },
+          { "id": "q_005_c", "text": "7", "isCorrect": true },
+          { "id": "q_005_d", "text": "8", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q_006",
+        "question": "Which part of a plant usually grows underground?",
+        "points": 10,
+        "position": 6,
+        "options": [
+          { "id": "q_006_a", "text": "Flower", "isCorrect": false },
+          { "id": "q_006_b", "text": "Leaf", "isCorrect": false },
+          { "id": "q_006_c", "text": "Root", "isCorrect": true },
+          { "id": "q_006_d", "text": "Fruit", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q_007",
+        "question": "What do bees make?",
+        "points": 10,
+        "position": 7,
+        "options": [
+          { "id": "q_007_a", "text": "Milk", "isCorrect": false },
+          { "id": "q_007_b", "text": "Honey", "isCorrect": true },
+          { "id": "q_007_c", "text": "Bread", "isCorrect": false },
+          { "id": "q_007_d", "text": "Butter", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q_008",
+        "question": "Which shape has three sides?",
+        "points": 10,
+        "position": 8,
+        "options": [
+          { "id": "q_008_a", "text": "Circle", "isCorrect": false },
+          { "id": "q_008_b", "text": "Square", "isCorrect": false },
+          { "id": "q_008_c", "text": "Triangle", "isCorrect": true },
+          { "id": "q_008_d", "text": "Rectangle", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q_009",
+        "question": "Which star is closest to Earth?",
+        "points": 10,
+        "position": 9,
+        "options": [
+          { "id": "q_009_a", "text": "Sirius", "isCorrect": false },
+          { "id": "q_009_b", "text": "The Sun", "isCorrect": true },
+          { "id": "q_009_c", "text": "Polaris", "isCorrect": false },
+          { "id": "q_009_d", "text": "Betelgeuse", "isCorrect": false }
+        ]
+      },
+      {
+        "id": "q_010",
+        "question": "What is 5 + 7?",
+        "points": 10,
+        "position": 10,
+        "options": [
+          { "id": "q_010_a", "text": "10", "isCorrect": false },
+          { "id": "q_010_b", "text": "11", "isCorrect": false },
+          { "id": "q_010_c", "text": "12", "isCorrect": true },
+          { "id": "q_010_d", "text": "13", "isCorrect": false }
+        ]
+      }
+    ]
+  }
+}
