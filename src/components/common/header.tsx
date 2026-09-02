@@ -1,7 +1,6 @@
 import type { FC } from 'hono/jsx'
 import { Icon } from '../ui/icon'
 import { Icons } from '../ui/icons'
-import { AuthModal } from './auth-modal'
 
 export interface HeaderProps {
   title?: string
@@ -30,28 +29,27 @@ export const Header: FC<HeaderProps> = () => {
 
           {/* MIDDLE: App Logo */}
           <div className="header-center">
-            <a href="#" className="logo-link" onclick="window.switchMainTab('hq'); return false;">
-              <img src="/logo.png" alt="Neon Activities Logo" className="header-logo-img" />
-              <span className="logo-title">NEON <span>ACTIVITIES</span></span>
+            <a href="/" className="logo-link" onclick="if(window.switchMainTab){window.switchMainTab('hq'); return false;}">
+              <img src="/neon.activities.logo.png" alt="Neon Activities" className="header-logo-img" />
             </a>
           </div>
 
           {/* RIGHT: Login & User Info */}
           <div className="header-right">
-            {/* Cadet User Profile / Login Button */}
-            <div 
+            {/* Cadet User Profile / Login Link */}
+            <a 
+              href="/login"
               className="header-user-badge" 
               title="Sign in with Email OTP" 
-              onclick="window.openAuthModal();"
+              id="headerUserBadgeLink"
             >
               <div className="user-avatar-mini">
                 <Icon icon={Icons.astronautNoto} size={22} />
               </div>
               <div className="user-info-text">
                 <span className="user-name-mini" id="headerUserName">Sign In</span>
-                <span className="user-level-mini" id="headerUserSub">Email OTP</span>
               </div>
-            </div>
+            </a>
           </div>
         </div>
       </header>
@@ -68,8 +66,9 @@ export const Header: FC<HeaderProps> = () => {
         {/* Drawer Header */}
         <div className="drawer-header">
           <div className="drawer-brand">
-            <img src="/logo.png" alt="Neon Activities Logo" className="drawer-logo-img" />
-            <span className="logo-title">NEON <span>ACTIVITIES</span></span>
+            <a href="/" className="logo-link" onclick="if(window.switchMainTab){window.switchMainTab('hq'); window.closeDrawer(); return false;}">
+              <img src="/neon.activities.logo.png" alt="Neon Activities" className="drawer-logo-img" />
+            </a>
           </div>
 
           <button 
@@ -207,9 +206,6 @@ export const Header: FC<HeaderProps> = () => {
           </div>
         </div>
       </aside>
-
-      {/* Better Auth Passwordless OTP Modal */}
-      <AuthModal />
     </>
   )
 }

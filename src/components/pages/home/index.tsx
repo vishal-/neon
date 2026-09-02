@@ -899,151 +899,29 @@ export const HomePage: FC = () => {
           });
 
           // ==========================================
-          // Better Auth Client-Side OTP Modal Handlers
+          // Better Auth Session Status & Login
           // ==========================================
-          let authCurrentEmail = '';
-
           window.openAuthModal = function() {
-            const modal = document.getElementById('authModal');
-            const backdrop = document.getElementById('authModalBackdrop');
-            if (modal) modal.classList.add('open');
-            if (backdrop) backdrop.classList.add('open');
-            document.body.style.overflow = 'hidden';
-            playSynthSound('flip');
-            const emailInput = document.getElementById('authEmailInput');
-            if (emailInput) setTimeout(function() { emailInput.focus(); }, 100);
+            window.location.href = '/login';
           };
 
-          window.closeAuthModal = function() {
-            const modal = document.getElementById('authModal');
-            const backdrop = document.getElementById('authModalBackdrop');
-            if (modal) modal.classList.remove('open');
-            if (backdrop) backdrop.classList.remove('open');
-            document.body.style.overflow = '';
-            playSynthSound('flip');
-          };
-
-          window.backToEmailStep = function() {
-            const emailForm = document.getElementById('authEmailForm');
-            const otpForm = document.getElementById('authOtpForm');
-            const statusMsg = document.getElementById('authStatusMsg');
-            if (emailForm) emailForm.style.display = 'block';
-            if (otpForm) otpForm.style.display = 'none';
-            if (statusMsg) statusMsg.innerHTML = '';
-          };
-
-          window.handleSendOtp = async function(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('authEmailInput');
-            const btn = document.getElementById('btnSendOtp');
-            const statusMsg = document.getElementById('authStatusMsg');
-            if (!emailInput) return;
-
-            const email = emailInput.value.trim();
-            if (!email) return;
-
-            authCurrentEmail = email;
-            if (btn) {
-              btn.disabled = true;
-              btn.innerHTML = '<span>Sending Code...</span> 🚀';
-            }
-            if (statusMsg) statusMsg.innerHTML = '<span class="status-loading">Sending cosmic code to ' + email + '...</span>';
-
+          (async function checkSession() {
             try {
-              const res = await fetch('/api/auth/email-otp/send-verification-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, type: 'sign-in' })
-              });
-
-              if (!res.ok) {
-                const data = await res.json().catch(function() { return {}; });
-                throw new Error(data.message || 'Failed to send OTP code');
+              const res = await fetch('/api/auth/get-session');
+              if (res.ok) {
+                const data = await res.json();
+                if (data && data.user && data.user.email) {
+                  const userNameEl = document.getElementById('headerUserName');
+                  const headerBadge = document.getElementById('headerUserBadgeLink');
+                  const drawerName = document.querySelector('.drawer-cadet-name');
+                  const emailName = data.user.name || data.user.email.split('@')[0];
+                  if (userNameEl) userNameEl.textContent = emailName + ' 🧑‍🚀';
+                  if (drawerName) drawerName.textContent = emailName + ' 🧑‍🚀';
+                  if (headerBadge) headerBadge.title = 'Signed in as ' + data.user.email;
+                }
               }
-
-              // Show Step 2
-              const emailForm = document.getElementById('authEmailForm');
-              const otpForm = document.getElementById('authOtpForm');
-              const targetEmailEl = document.getElementById('authTargetEmail');
-
-              if (emailForm) emailForm.style.display = 'none';
-              if (otpForm) otpForm.style.display = 'block';
-              if (targetEmailEl) targetEmailEl.textContent = email;
-              if (statusMsg) statusMsg.innerHTML = '<span class="status-success">✨ Cosmic code sent! Check your inbox.</span>';
-
-              const otpInput = document.getElementById('authOtpInput');
-              if (otpInput) {
-                otpInput.value = '';
-                otpInput.focus();
-              }
-              playSynthSound('correct');
-            } catch (err) {
-              if (statusMsg) statusMsg.innerHTML = '<span class="status-error">⚠️ ' + (err.message || 'Error sending code. Please try again.') + '</span>';
-              playSynthSound('wrong');
-            } finally {
-              if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<span>Send Cosmic Code</span> 🚀';
-              }
-            }
-          };
-
-          window.handleVerifyOtp = async function(e) {
-            e.preventDefault();
-            const otpInput = document.getElementById('authOtpInput');
-            const btn = document.getElementById('btnVerifyOtp');
-            const statusMsg = document.getElementById('authStatusMsg');
-            if (!otpInput || !authCurrentEmail) return;
-
-            const otp = otpInput.value.trim();
-            if (!otp || otp.length < 6) return;
-
-            if (btn) {
-              btn.disabled = true;
-              btn.innerHTML = '<span>Verifying...</span> ✨';
-            }
-            if (statusMsg) statusMsg.innerHTML = '<span class="status-loading">Verifying code...</span>';
-
-            try {
-              const res = await fetch('/api/auth/sign-in/email-otp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: authCurrentEmail, otp: otp })
-              });
-
-              if (!res.ok) {
-                const data = await res.json().catch(function() { return {}; });
-                throw new Error(data.message || 'Invalid or expired code. Please try again.');
-              }
-
-              if (statusMsg) statusMsg.innerHTML = '<span class="status-success">🎉 Blast off! You are signed in as ' + authCurrentEmail + '!</span>';
-              playSynthSound('chest');
-
-              const userNameEl = document.getElementById('headerUserName');
-              const userSubEl = document.getElementById('headerUserSub');
-              if (userNameEl) userNameEl.textContent = authCurrentEmail.split('@')[0] + ' 🧑‍🚀';
-              if (userSubEl) userSubEl.textContent = 'Explorer';
-
-              setTimeout(function() {
-                window.closeAuthModal();
-              }, 1800);
-            } catch (err) {
-              if (statusMsg) statusMsg.innerHTML = '<span class="status-error">⚠️ ' + (err.message || 'Verification failed') + '</span>';
-              playSynthSound('wrong');
-            } finally {
-              if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<span>Verify & Blast Off</span> ✨';
-              }
-            }
-          };
-
-          window.handleResendOtp = function() {
-            if (!authCurrentEmail) return;
-            const emailInput = document.getElementById('authEmailInput');
-            if (emailInput) emailInput.value = authCurrentEmail;
-            window.handleSendOtp(new Event('submit'));
-          };
+            } catch (e) {}
+          })();
 
           // ==========================================
           // Mini-Game 1: Cosmic Quiz Whiz Engine

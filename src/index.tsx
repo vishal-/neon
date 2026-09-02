@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { renderer } from './renderer'
 import { HomePage } from './components/pages/home'
+import { LoginPage } from './components/pages/login'
 import { checkApi } from './api/check'
 import { createAuth, type AuthEnv } from './lib/auth'
 
@@ -24,6 +25,10 @@ app.use(renderer)
 
 app.get('/', (c) => {
   return c.render(<HomePage />)
+})
+
+app.get('/login', (c) => {
+  return c.render(<LoginPage />, { title: 'Login — Neon Activities 🧑‍🚀' })
 })
 
 export default app
