@@ -4,6 +4,7 @@ import { profileApi } from './api/profile'
 import { otpApi } from './api/otp'
 import { bossApi } from './api/boss'
 import { xpApi } from './api/xp'
+import { quizzesApi } from './api/quizzes'
 import { createAuth, type AuthEnv } from './lib/auth'
 
 export type AppEnv = {
@@ -24,6 +25,7 @@ app.route('/api/profile', profileApi)
 app.route('/api/otp', otpApi)
 app.route('/api/boss', bossApi)
 app.route('/api/xp', xpApi)
+app.route('/api/quizzes', quizzesApi)
 
 export default app
 

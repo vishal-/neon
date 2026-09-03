@@ -34,6 +34,7 @@ CREATE TABLE `user` (
 	`email` text NOT NULL,
 	`email_verified` integer DEFAULT false NOT NULL,
 	`image` text,
+	`is_boss` integer DEFAULT false NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
 );
@@ -59,12 +60,14 @@ CREATE TABLE `attempt_answers` (
 	`attempt_id` text NOT NULL,
 	`question_id` integer NOT NULL,
 	`selected_answer` text NOT NULL,
-	`is_correct` integer NOT NULL,
+	`is_correct` integer,
 	`response_time_ms` integer,
+	`updated_at` integer NOT NULL,
 	FOREIGN KEY (`attempt_id`) REFERENCES `attempts`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`question_id`) REFERENCES `questions`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX `attempt_question_idx` ON `attempt_answers` (`attempt_id`,`question_id`);--> statement-breakpoint
 CREATE TABLE `attempts` (
 	`id` text PRIMARY KEY NOT NULL,
 	`quiz_id` text NOT NULL,
@@ -75,10 +78,21 @@ CREATE TABLE `attempts` (
 	`total_xp_awarded` integer DEFAULT 0 NOT NULL,
 	`time_taken_seconds` integer DEFAULT 0 NOT NULL,
 	`status` text DEFAULT 'in_progress' NOT NULL,
+	`shuffled_order` text,
 	`started_at` integer NOT NULL,
+	`expires_at` integer,
 	`completed_at` integer,
 	FOREIGN KEY (`quiz_id`) REFERENCES `quizzes`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE set null
+);
+--> statement-breakpoint
+CREATE TABLE `question_tags` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`question_id` integer NOT NULL,
+	`tag_id` integer NOT NULL,
+	`created_at` integer NOT NULL,
+	FOREIGN KEY (`question_id`) REFERENCES `questions`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`tag_id`) REFERENCES `tags`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `questions` (
@@ -118,4 +132,35 @@ CREATE TABLE `quizzes` (
 	`updated_at` integer NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `quizzes_slug_unique` ON `quizzes` (`slug`);
+CREATE UNIQUE INDEX `quizzes_slug_unique` ON `quizzes` (`slug`);--> statement-breakpoint
+CREATE TABLE `tags` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`name` text NOT NULL,
+	`slug` text NOT NULL,
+	`description` text,
+	`color` text DEFAULT 'teal' NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `tags_name_unique` ON `tags` (`name`);--> statement-breakpoint
+CREATE UNIQUE INDEX `tags_slug_unique` ON `tags` (`slug`);--> statement-breakpoint
+CREATE TABLE `user_xp` (
+	`user_id` text PRIMARY KEY NOT NULL,
+	`total_xp` integer DEFAULT 0 NOT NULL,
+	`level` integer DEFAULT 1 NOT NULL,
+	`updated_at` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE TABLE `xp_transactions` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`amount` integer NOT NULL,
+	`activity_type` text NOT NULL,
+	`activity_id` text,
+	`description` text NOT NULL,
+	`metadata` text,
+	`created_at` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);

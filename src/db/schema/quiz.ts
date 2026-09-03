@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core'
 import { user } from './auth'
 
 /**
@@ -87,9 +87,11 @@ export const attempts = sqliteTable('attempts', {
   status: text('status', { enum: ['in_progress', 'completed', 'abandoned'] })
     .notNull()
     .default('in_progress'),
+  shuffledOrder: text('shuffled_order', { mode: 'json' }).$type<{ questionId: number; options: string[] }[]>(),
   startedAt: integer('started_at', { mode: 'timestamp' })
     .notNull()
     .$defaultFn(() => new Date()),
+  expiresAt: integer('expires_at', { mode: 'timestamp' }),
   completedAt: integer('completed_at', { mode: 'timestamp' }),
 })
 
@@ -97,20 +99,29 @@ export const attempts = sqliteTable('attempts', {
  * Attempt Answers Table
  * Stores granular answer logs for each question in a quiz attempt.
  */
-export const attemptAnswers = sqliteTable('attempt_answers', {
-  id: text('id')
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  attemptId: text('attempt_id')
-    .notNull()
-    .references(() => attempts.id, { onDelete: 'cascade' }),
-  questionId: integer('question_id')
-    .notNull()
-    .references(() => questions.id, { onDelete: 'cascade' }),
-  selectedAnswer: text('selected_answer').notNull(),
-  isCorrect: integer('is_correct', { mode: 'boolean' }).notNull(),
-  responseTimeMs: integer('response_time_ms'),
-})
+export const attemptAnswers = sqliteTable(
+  'attempt_answers',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    attemptId: text('attempt_id')
+      .notNull()
+      .references(() => attempts.id, { onDelete: 'cascade' }),
+    questionId: integer('question_id')
+      .notNull()
+      .references(() => questions.id, { onDelete: 'cascade' }),
+    selectedAnswer: text('selected_answer').notNull(),
+    isCorrect: integer('is_correct', { mode: 'boolean' }),
+    responseTimeMs: integer('response_time_ms'),
+    updatedAt: integer('updated_at', { mode: 'timestamp' })
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => [
+    uniqueIndex('attempt_question_idx').on(table.attemptId, table.questionId),
+  ]
+)
 
 export type Question = typeof questions.$inferSelect
 export type NewQuestion = typeof questions.$inferInsert
