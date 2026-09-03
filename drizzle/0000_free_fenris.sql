@@ -102,7 +102,6 @@ CREATE TABLE `questions` (
 	`correct_answer` text NOT NULL,
 	`explanation` text,
 	`difficulty` text DEFAULT 'medium' NOT NULL,
-	`category` text,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
 );
@@ -121,7 +120,7 @@ CREATE TABLE `quizzes` (
 	`title` text NOT NULL,
 	`slug` text NOT NULL,
 	`description` text,
-	`category` text,
+	`category` text DEFAULT 'general' NOT NULL,
 	`difficulty` text DEFAULT 'medium' NOT NULL,
 	`time_limit_seconds` integer DEFAULT 0 NOT NULL,
 	`reward_xp` integer DEFAULT 100 NOT NULL,

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1c556328-ac39-4d4d-8bca-79fca6e712d5",
+  "id": "4c194afe-d720-48f1-827b-b72f77cdd463",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -705,13 +705,6 @@
           "autoincrement": false,
           "default": "'medium'"
         },
-        "category": {
-          "name": "category",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -834,8 +827,9 @@
           "name": "category",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'general'"
         },
         "difficulty": {
           "name": "difficulty",
