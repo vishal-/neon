@@ -1,6 +1,5 @@
 import { useState, useEffect, type FC, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Button, Chip } from '@heroui/react'
 import { Icon } from '../../ui/icon'
 import { Icons } from '../../ui/icons'
 
@@ -61,55 +60,55 @@ export const BossLayout: FC<BossLayoutProps> = ({ children, title, subtitle, act
 
   if (loading) {
     return (
-      <div className="boss-loading-screen">
-        <div className="boss-loading-card">
-          <div className="boss-scanner-circle">
-            <span className="scanner-beam"></span>
-            <Icon icon={Icons.rocketLaunch} size={40} />
-          </div>
-          <h3>Verifying Commander Credentials...</h3>
-          <p>Scanning galactic clearance codes for Boss privileges</p>
+      <div className="min-vh-100 d-flex flex-column align-items-center justify-content-center bg-dark text-light p-4 text-center">
+        <div className="spinner-border text-info mb-3" style={{ width: '3rem', height: '3rem' }} role="status">
+          <span className="visually-hidden">Loading...</span>
         </div>
+        <h4 className="fw-bold">Verifying Commander Credentials...</h4>
+        <p className="text-muted small">Scanning galactic clearance codes for Boss privileges</p>
       </div>
     )
   }
 
   if (!isBoss) {
     return (
-      <div className="boss-auth-restricted-container">
-        <div className="boss-restricted-card">
-          <div className="restricted-badge">
-            <Icon icon={Icons.shieldCheck} size={48} />
+      <div className="min-vh-100 d-flex align-items-center justify-content-center bg-dark text-light p-3">
+        <div className="card shadow-lg bg-dark border-danger p-4 p-md-5 text-center" style={{ maxWidth: '500px', borderRadius: '1rem' }}>
+          <div className="text-warning mb-3">
+            <Icon icon={Icons.shieldCheck} size={54} />
           </div>
-          <h2>Restricted Station: Boss Clearance Required</h2>
-          <p className="restricted-desc">
+          <h3 className="fw-bold mb-2">Restricted Station: Boss Clearance Required</h3>
+          <p className="text-muted small mb-4">
             {user
-              ? `Cadet ${user.name || user.email}, your current account does not have Boss (Admin) clearance configured in the database.`
+              ? `Cadet ${user.name || user.email}, your account does not have Boss (Admin) clearance configured in the database.`
               : 'You must be signed in with an authorized Boss account to enter this control hub.'}
           </p>
 
-          <div className="restricted-actions">
+          <div className="d-flex flex-column gap-2">
             {!user ? (
-              <Button
-                className="boss-btn-primary"
+              <button
+                type="button"
+                className="btn btn-primary"
                 onClick={() => navigate('/login')}
               >
                 Sign In With Boss Email
-              </Button>
+              </button>
             ) : (
-              <Button
-                className="boss-btn-secondary"
+              <button
+                type="button"
+                className="btn btn-outline-info"
                 onClick={() => navigate('/profile')}
               >
                 Check My Cadet Profile
-              </Button>
+              </button>
             )}
-            <Button
-              className="boss-btn-ghost"
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
               onClick={() => navigate('/')}
             >
               Return to HQ
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -117,63 +116,67 @@ export const BossLayout: FC<BossLayoutProps> = ({ children, title, subtitle, act
   }
 
   return (
-    <div className="boss-admin-root">
-      {/* Top Cockpit Navigation Bar */}
-      <header className="boss-topbar">
-        <div className="boss-topbar-inner">
-          <div className="boss-brand-group">
-            <Link to="/boss" className="boss-brand-link">
-              <div className="boss-logo-badge">⚡ BOSS</div>
-              <span className="boss-brand-title">Mission Control</span>
+    <div className="min-vh-100 bg-dark text-light d-flex flex-column">
+      {/* Top Cockpit Navbar */}
+      <nav className="navbar navbar-expand navbar-dark bg-black border-bottom border-secondary border-opacity-50 sticky-top px-3 py-2">
+        <div className="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2">
+          {/* Brand */}
+          <div className="d-flex align-items-center gap-2">
+            <Link to="/boss" className="navbar-brand d-flex align-items-center gap-2 fw-bold text-info m-0">
+              <span className="badge text-bg-warning px-2 py-1">⚡ BOSS</span>
+              <span className="fs-5 text-light">Mission Control</span>
             </Link>
-            <Chip size="sm" variant="soft" className="boss-chip-role">
-              Admin HQ
-            </Chip>
+            <span className="badge bg-secondary bg-opacity-50 text-light d-none d-sm-inline-block">Admin HQ</span>
           </div>
 
-          <nav className="boss-nav-links">
+          {/* Navigation Links */}
+          <ul className="nav nav-pills d-flex align-items-center gap-1 my-1">
             {navItems.map((item) => {
               const isActive =
                 item.path === '/boss'
                   ? location.pathname === '/boss'
                   : location.pathname.startsWith(item.path)
               return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`boss-nav-item ${isActive ? 'active' : ''}`}
-                >
-                  <Icon icon={item.icon} size={16} />
-                  <span>{item.label}</span>
-                </Link>
+                <li key={item.path} className="nav-item">
+                  <Link
+                    to={item.path}
+                    className={`nav-link py-1 px-3 rounded-pill d-flex align-items-center gap-1 ${
+                      isActive ? 'active bg-primary text-white fw-bold' : 'text-light'
+                    }`}
+                  >
+                    <Icon icon={item.icon} size={16} />
+                    <span>{item.label}</span>
+                  </Link>
+                </li>
               )
             })}
-          </nav>
+          </ul>
 
-          <div className="boss-user-section">
-            <div className="boss-user-pill">
-              <span className="boss-user-dot"></span>
-              <span className="boss-user-name">{user?.name || user?.email || 'Commander'}</span>
+          {/* User Info & Back Button */}
+          <div className="d-flex align-items-center gap-2">
+            <div className="badge bg-black border border-secondary text-info px-3 py-2 d-none d-md-flex align-items-center gap-1">
+              <span className="rounded-circle bg-success d-inline-block" style={{ width: '8px', height: '8px' }}></span>
+              <span>{user?.name || user?.email || 'Commander'}</span>
             </div>
-            <Link to="/" className="boss-exit-btn" title="Back to Cadet App">
-              <Icon icon={Icons.rocketLaunch} size={16} />
-              <span>Back to App</span>
+            <Link to="/" className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1" title="Back to Cadet App">
+              <Icon icon={Icons.rocketLaunch} size={15} />
+              <span className="d-none d-sm-inline">App HQ</span>
             </Link>
           </div>
         </div>
-      </header>
+      </nav>
 
-      {/* Main Content Area */}
-      <main className="boss-main-content">
-        <div className="boss-page-header">
-          <div className="boss-page-header-text">
-            <h1 className="boss-page-title">{title}</h1>
-            {subtitle && <p className="boss-page-subtitle">{subtitle}</p>}
+      {/* Main Content Body */}
+      <main className="container-fluid py-4 px-3 px-md-5 flex-grow-1">
+        <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+          <div>
+            <h1 className="h3 fw-bold mb-1">{title}</h1>
+            {subtitle && <p className="text-muted small mb-0">{subtitle}</p>}
           </div>
-          {action && <div className="boss-page-action">{action}</div>}
+          {action && <div>{action}</div>}
         </div>
 
-        <div className="boss-page-body">{children}</div>
+        <div>{children}</div>
       </main>
     </div>
   )

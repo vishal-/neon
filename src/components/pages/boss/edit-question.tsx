@@ -1,6 +1,5 @@
 import { useState, useEffect, type FC } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button, Card, Input, TextArea } from '@heroui/react'
 import { BossLayout } from './boss-layout'
 
 interface TagItem {
@@ -83,7 +82,6 @@ export const EditQuestionPage: FC = () => {
     updated[index] = val
     setOptions(updated)
 
-    // If the changed option was selected as the correct answer, update correctAnswer too
     if (correctAnswer === prevVal) {
       setCorrectAnswer(val)
     }
@@ -223,7 +221,10 @@ export const EditQuestionPage: FC = () => {
   if (loading) {
     return (
       <BossLayout title="Loading Question..." subtitle="Retrieving question parameters">
-        <div className="boss-table-loading">Loading question from bank...</div>
+        <div className="p-5 text-center text-muted">
+          <div className="spinner-border text-info mb-2" role="status"></div>
+          <div>Loading question from bank...</div>
+        </div>
       </BossLayout>
     )
   }
@@ -233,101 +234,107 @@ export const EditQuestionPage: FC = () => {
       title={isNew ? 'Compose Question' : 'Edit Question'}
       subtitle={isNew ? 'Add a multiple-choice question to the reusable question bank' : `Question ID #${id}`}
       action={
-        <div className="boss-actions-row">
-          <Button
-            className="boss-btn-ghost"
+        <div className="d-flex align-items-center gap-2">
+          <button
+            type="button"
+            className="btn btn-outline-secondary btn-sm"
             onClick={() => navigate('/boss/questions')}
           >
-            &larr; Back to Questions
-          </Button>
+            &larr; Back
+          </button>
           {!isNew && (
-            <Button
-              className="boss-btn-danger"
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm"
               onClick={handleDelete}
             >
-              Delete Question
-            </Button>
+              Delete
+            </button>
           )}
-          <Button
-            className="boss-btn-primary"
-            onClick={handleSave}
-            isDisabled={saving}
+          <button
+            type="submit"
+            form="editQuestionForm"
+            className="btn btn-primary btn-sm fw-bold px-3"
+            disabled={saving}
           >
             {saving ? 'Saving...' : isNew ? 'Save to Bank' : 'Save Changes'}
-          </Button>
+          </button>
         </div>
       }
     >
       {statusMessage && (
-        <div className="boss-toast-notification">
-          <span>✓ {statusMessage}</span>
+        <div className="alert alert-success py-2 px-3 small mb-3" role="alert">
+          ✓ {statusMessage}
         </div>
       )}
       {errorMessage && (
-        <div className="boss-toast-notification boss-toast-error">
-          <span>⚠ {errorMessage}</span>
+        <div className="alert alert-danger py-2 px-3 small mb-3" role="alert">
+          ⚠️ {errorMessage}
         </div>
       )}
 
-      <form onSubmit={handleSave} className="boss-editor-grid">
-        {/* Main Column: Question Text & Options */}
-        <div className="boss-editor-main">
-          <Card className="boss-form-card">
-            <h2 className="boss-form-section-title">Question Stem & Options</h2>
+      <form id="editQuestionForm" onSubmit={handleSave} className="row g-4">
+        {/* Left Column: Stem & Options */}
+        <div className="col-lg-7">
+          <div className="card bg-dark text-light border border-secondary p-4 shadow-sm mb-4">
+            <h5 className="fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+              Question Stem & Options
+            </h5>
 
-            <div className="boss-field-group">
-              <label className="boss-label">Question Text *</label>
-              <TextArea
-                placeholder="e.g. Which planet in our solar system has the most visible rings?"
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Question Text *</label>
+              <textarea
+                className="form-control bg-dark text-light border-secondary"
+                rows={3}
+                placeholder="e.g. Which planet in our solar system has the most prominent rings?"
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
-                rows={3}
                 required
-                className="boss-textarea"
               />
             </div>
 
-            <div className="boss-field-group">
-              <div className="options-header-row">
-                <label className="boss-label">Multiple-Choice Answer Options *</label>
-                <span className="boss-field-hint">Select the radio button next to the correct answer</span>
+            <div className="mb-3">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label className="form-label small fw-semibold mb-0">Multiple-Choice Answer Options *</label>
+                <span className="text-muted small">Select the radio of the correct answer</span>
               </div>
 
-              <div className="options-builder-list">
+              <div className="d-flex flex-column gap-2 mb-3">
                 {options.map((opt, idx) => {
                   const isChecked = opt.trim() !== '' && correctAnswer === opt
                   return (
-                    <div
-                      key={idx}
-                      className={`option-builder-item ${isChecked ? 'is-correct' : ''}`}
-                    >
-                      <label className="option-radio-label" title="Mark as Correct Answer">
+                    <div key={idx} className="input-group">
+                      <span className={`input-group-text border-secondary ${isChecked ? 'bg-success text-white' : 'bg-black text-light'}`}>
                         <input
                           type="radio"
                           name="correct_answer_radio"
+                          className="form-check-input mt-0 cursor-pointer"
                           checked={isChecked}
                           onChange={() => {
                             if (opt.trim()) {
                               setCorrectAnswer(opt)
                             }
                           }}
+                          title="Click to mark as correct answer"
                         />
-                        <span className="option-letter">
+                        <span className="ms-2 fw-bold small">
                           {String.fromCharCode(65 + idx)}
                         </span>
-                      </label>
+                      </span>
 
-                      <Input
+                      <input
+                        type="text"
+                        className={`form-control bg-dark text-light border-secondary ${isChecked ? 'border-success' : ''}`}
                         placeholder={`Option ${String.fromCharCode(65 + idx)}`}
                         value={opt}
                         onChange={(e) => handleOptionChange(idx, e.target.value)}
-                        className="boss-input option-input"
+                        required
                       />
 
                       {options.length > 2 && (
                         <button
                           type="button"
-                          className="btn-icon-remove"
+                          className="btn btn-outline-danger"
                           onClick={() => handleRemoveOption(idx)}
                           title="Remove option"
                         >
@@ -340,50 +347,51 @@ export const EditQuestionPage: FC = () => {
               </div>
 
               {options.length < 6 && (
-                <Button
+                <button
                   type="button"
-                  size="sm"
-                  className="boss-btn-secondary"
+                  className="btn btn-outline-info btn-sm"
                   onClick={handleAddOption}
-                  style={{ marginTop: '0.75rem' }}
                 >
                   + Add Another Option
-                </Button>
+                </button>
               )}
             </div>
 
-            <div className="boss-field-group">
-              <label className="boss-label">Explanation / Fun Fact</label>
-              <TextArea
-                placeholder="Shown to cadet after submitting their answer (e.g. Saturn is famous for its bright, wide ring system made of ice and rock particles!)."
+            <div className="mb-2">
+              <label className="form-label small fw-semibold">Explanation / Fun Fact</label>
+              <textarea
+                className="form-control bg-dark text-light border-secondary"
+                rows={2}
+                placeholder="Shown to cadet after answering (e.g. Saturn is famous for its bright rings made of ice chunks and rock!)."
                 value={explanation}
                 onChange={(e) => setExplanation(e.target.value)}
-                rows={2}
-                className="boss-textarea"
               />
             </div>
-          </Card>
+          </div>
         </div>
 
-        {/* Sidebar Column: Difficulty, Category & Tags */}
-        <div className="boss-editor-sidebar">
-          <Card className="boss-form-card">
-            <h2 className="boss-form-section-title">Taxonomy & Category</h2>
+        {/* Right Column: Taxonomy */}
+        <div className="col-lg-5">
+          <div className="card bg-dark text-light border border-secondary p-4 shadow-sm mb-4">
+            <h5 className="fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+              Taxonomy & Categorization
+            </h5>
 
-            <div className="boss-field-group">
-              <label className="boss-label">Category</label>
-              <Input
-                placeholder="e.g. Astronomy, Physics, Biology"
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Category</label>
+              <input
+                type="text"
+                className="form-control bg-dark text-light border-secondary"
+                placeholder="e.g. Astronomy, Biology, Geography"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="boss-input"
               />
             </div>
 
-            <div className="boss-field-group">
-              <label className="boss-label">Difficulty Level</label>
+            <div className="mb-3">
+              <label className="form-label small fw-semibold">Difficulty Level</label>
               <select
-                className="boss-select"
+                className="form-select bg-dark text-light border-secondary"
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value as any)}
               >
@@ -393,16 +401,16 @@ export const EditQuestionPage: FC = () => {
               </select>
             </div>
 
-            {/* Tags Selector */}
-            <div className="boss-field-group">
-              <div className="tags-header-row">
-                <label className="boss-label">Question Tags</label>
-                <span className="boss-field-hint">{selectedTagIds.length} selected</span>
+            {/* Tags Selection */}
+            <div className="mb-3">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label className="form-label small fw-semibold mb-0">Attached Tags</label>
+                <span className="text-muted small">{selectedTagIds.length} selected</span>
               </div>
 
-              <div className="interactive-tags-picker">
+              <div className="d-flex flex-wrap gap-1 p-2 rounded bg-black border border-secondary mb-3">
                 {allTags.length === 0 ? (
-                  <p className="text-muted-sm">No tags available yet. Create one below!</p>
+                  <span className="text-muted small p-1">No tags configured yet. Create one below!</span>
                 ) : (
                   allTags.map((tag) => {
                     const isSelected = selectedTagIds.includes(tag.id)
@@ -410,13 +418,12 @@ export const EditQuestionPage: FC = () => {
                       <button
                         key={tag.id}
                         type="button"
-                        className={`interactive-tag-chip chip-${tag.color || 'teal'} ${
-                          isSelected ? 'selected' : ''
+                        className={`btn btn-sm py-0 px-2 rounded-pill ${
+                          isSelected ? 'btn-info fw-bold' : 'btn-outline-secondary text-light'
                         }`}
                         onClick={() => handleToggleTag(tag.id)}
                       >
-                        <span>{isSelected ? '✓' : '+'}</span>
-                        <span>#{tag.name}</span>
+                        {isSelected ? '✓ ' : '+ '}#{tag.name}
                       </button>
                     )
                   })
@@ -424,12 +431,13 @@ export const EditQuestionPage: FC = () => {
               </div>
 
               {/* Quick Tag Creator */}
-              <div className="quick-tag-creator">
-                <Input
+              <div className="input-group input-group-sm">
+                <input
+                  type="text"
+                  className="form-control bg-black text-light border-secondary"
                   placeholder="Quick create tag (e.g. Solar System)..."
                   value={newTagInput}
                   onChange={(e) => setNewTagInput(e.target.value)}
-                  className="boss-input quick-tag-input"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault()
@@ -437,17 +445,17 @@ export const EditQuestionPage: FC = () => {
                     }
                   }}
                 />
-                <Button
-                  size="sm"
-                  className="boss-btn-secondary"
-                  isDisabled={!newTagInput.trim() || creatingTag}
+                <button
+                  type="button"
+                  className="btn btn-outline-info"
+                  disabled={!newTagInput.trim() || creatingTag}
                   onClick={handleQuickCreateTag}
                 >
-                  {creatingTag ? '...' : 'Add'}
-                </Button>
+                  {creatingTag ? '...' : '+ Create'}
+                </button>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </form>
     </BossLayout>

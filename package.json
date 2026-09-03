@@ -15,13 +15,12 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@heroui/react": "^3.2.4",
-    "@heroui/styles": "^3.2.4",
     "@iconify-icons/material-symbols": "^2.0.1",
     "@iconify-icons/noto": "^2.0.0",
     "@iconify/react": "^6.0.2",
     "@libsql/client": "^0.17.4",
     "better-auth": "^1.7.2",
+    "bootstrap": "^5.3.8",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.13.5",
     "react": "^19.2.8",

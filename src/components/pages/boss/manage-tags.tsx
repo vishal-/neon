@@ -1,5 +1,4 @@
 import { useState, useEffect, type FC } from 'react'
-import { Button, Card, Chip, Input, TextArea } from '@heroui/react'
 import { BossLayout } from './boss-layout'
 import { Icon } from '../../ui/icon'
 import { Icons } from '../../ui/icons'
@@ -15,11 +14,11 @@ interface TagData {
 }
 
 const COLOR_OPTIONS = [
-  { label: 'Teal (Cyan)', value: 'teal', hex: '#7ee7c9' },
-  { label: 'Purple', value: 'purple', hex: '#c084fc' },
-  { label: 'Rose', value: 'rose', hex: '#f472b6' },
-  { label: 'Gold', value: 'gold', hex: '#fcd34d' },
-  { label: 'Blue', value: 'blue', hex: '#7ca5f5' },
+  { label: 'Cyan / Teal', value: 'teal', bgClass: 'text-bg-info' },
+  { label: 'Purple', value: 'purple', bgClass: 'text-bg-primary' },
+  { label: 'Rose / Pink', value: 'rose', bgClass: 'text-bg-danger' },
+  { label: 'Gold / Yellow', value: 'gold', bgClass: 'text-bg-warning' },
+  { label: 'Blue', value: 'blue', bgClass: 'text-bg-secondary' },
 ]
 
 export const ManageTagsPage: FC = () => {
@@ -156,6 +155,22 @@ export const ManageTagsPage: FC = () => {
     }
   }
 
+  const getBadgeClass = (colorName: string) => {
+    switch (colorName) {
+      case 'purple':
+        return 'text-bg-primary'
+      case 'rose':
+        return 'text-bg-danger'
+      case 'gold':
+        return 'text-bg-warning'
+      case 'blue':
+        return 'text-bg-secondary'
+      case 'teal':
+      default:
+        return 'text-bg-info'
+    }
+  }
+
   const filteredTags = tags.filter(
     (t) =>
       t.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -165,104 +180,107 @@ export const ManageTagsPage: FC = () => {
 
   return (
     <BossLayout
-      title="Curriculum Tags & Taxonomies"
-      subtitle="Organize question topics and skills with distinct colored tag indicators"
+      title="Categorization Tags"
+      subtitle="Define curriculum tags, subject matters, and difficulty markers for question banks"
       action={
-        <Button className="boss-btn-primary" onClick={handleOpenCreate}>
+        <button
+          type="button"
+          className="btn btn-primary btn-sm fw-bold"
+          onClick={handleOpenCreate}
+        >
           + Create New Tag
-        </Button>
+        </button>
       }
     >
       {statusMessage && (
-        <div className="boss-toast-notification">
-          <span>✓ {statusMessage}</span>
+        <div className="alert alert-success py-2 px-3 small mb-3" role="alert">
+          ✓ {statusMessage}
         </div>
       )}
 
-      {/* Filter Bar */}
-      <div className="boss-filter-bar">
-        <div className="boss-search-wrapper" style={{ maxWidth: '400px' }}>
-          <Input
-            placeholder="Search tags by name or description..."
+      {/* Control Bar */}
+      <div className="row g-2 mb-3 align-items-center">
+        <div className="col-12 col-md-6">
+          <input
+            type="search"
+            className="form-control bg-dark text-light border-secondary"
+            placeholder="Search tags by name, slug, or description..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="boss-search-input"
           />
-        </div>
-        <div className="boss-stat-pill">
-          {tags.length} Total Tags Active
         </div>
       </div>
 
-      {/* Tags Cards / Table */}
-      <Card className="boss-table-card">
+      {/* Tags Table */}
+      <div className="card bg-dark text-light border border-secondary shadow-sm overflow-hidden">
         {loading ? (
-          <div className="boss-table-loading">Scanning tag registry...</div>
+          <div className="p-5 text-center text-muted">
+            <div className="spinner-border spinner-border-sm text-info me-2" role="status"></div>
+            <span>Scanning tag registry...</span>
+          </div>
         ) : filteredTags.length === 0 ? (
-          <div className="boss-empty-placeholder">
-            <Icon icon={Icons.sparkles} size={36} />
-            <h3>No tags created yet</h3>
-            <p>Tags categorize questions by cosmic themes, subjects, or age ranks.</p>
-            <Button className="boss-btn-secondary" onClick={handleOpenCreate}>
+          <div className="p-5 text-center text-muted">
+            <div className="mb-2 text-warning">
+              <Icon icon={Icons.sparkles} size={40} />
+            </div>
+            <h5 className="fw-bold text-light">No tags created yet</h5>
+            <p className="small mb-3">Tags categorize questions by cosmic themes, subjects, or age ranks.</p>
+            <button
+              type="button"
+              className="btn btn-outline-info btn-sm"
+              onClick={handleOpenCreate}
+            >
               Create First Tag
-            </Button>
+            </button>
           </div>
         ) : (
-          <div className="boss-table-responsive">
-            <table className="boss-data-table">
-              <thead>
+          <div className="table-responsive">
+            <table className="table table-dark table-hover align-middle mb-0">
+              <thead className="table-active">
                 <tr>
-                  <th>Tag Badge</th>
-                  <th>Slug</th>
-                  <th>Description</th>
-                  <th>Mapped Questions</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
+                  <th scope="col">Tag Badge</th>
+                  <th scope="col">Slug</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Mapped Questions</th>
+                  <th scope="col" className="text-end">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredTags.map((tag) => (
                   <tr key={tag.id}>
                     <td>
-                      <div className="tag-name-cell">
-                        <Chip
-                          size="md"
-                          variant="soft"
-                          className={`chip-${tag.color || 'teal'}`}
-                        >
-                          #{tag.name}
-                        </Chip>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="table-sub-meta font-mono">/{tag.slug}</span>
-                    </td>
-                    <td>
-                      <span className="table-desc-text">
-                        {tag.description || '—'}
+                      <span className={`badge ${getBadgeClass(tag.color)} fs-6 py-1 px-3`}>
+                        #{tag.name}
                       </span>
                     </td>
                     <td>
-                      <Chip size="sm" variant="soft" className="chip-purple">
-                        {tag.questionsCount} {tag.questionsCount === 1 ? 'Question' : 'Questions'}
-                      </Chip>
+                      <code className="text-info small">/{tag.slug}</code>
                     </td>
                     <td>
-                      <div className="table-actions-cell">
-                        <Button
-                          size="sm"
-                          className="boss-btn-ghost"
+                      <span className="text-muted small">{tag.description || '—'}</span>
+                    </td>
+                    <td>
+                      <span className="badge text-bg-secondary">
+                        {tag.questionsCount} {tag.questionsCount === 1 ? 'Question' : 'Questions'}
+                      </span>
+                    </td>
+                    <td className="text-end">
+                      <div className="btn-group btn-group-sm">
+                        <button
+                          type="button"
+                          className="btn btn-outline-info"
                           onClick={() => handleOpenEdit(tag)}
                         >
                           Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="boss-btn-danger"
-                          isDisabled={deletingId === tag.id}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger"
+                          disabled={deletingId === tag.id}
                           onClick={() => handleDelete(tag)}
                         >
                           {deletingId === tag.id ? '...' : 'Delete'}
-                        </Button>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -271,112 +289,115 @@ export const ManageTagsPage: FC = () => {
             </table>
           </div>
         )}
-      </Card>
+      </div>
 
       {/* Create / Edit Tag Modal */}
       {modalOpen && (
-        <div className="boss-modal-backdrop" onClick={() => setModalOpen(false)}>
-          <div className="boss-modal-card tag-modal" onClick={(e) => e.stopPropagation()}>
-            <form onSubmit={handleSubmit}>
-              <div className="boss-modal-header">
-                <div className="modal-title-group">
-                  <Icon icon={Icons.sparkles} size={24} />
-                  <h3>{editingTag ? `Edit Tag: #${editingTag.name}` : 'Create New Tag'}</h3>
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}
+          onClick={() => setModalOpen(false)}
+        >
+          <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content bg-dark text-light border border-secondary">
+              <form onSubmit={handleSubmit}>
+                <div className="modal-header border-secondary">
+                  <h5 className="modal-title d-flex align-items-center gap-2">
+                    <Icon icon={Icons.sparkles} size={20} />
+                    <span>{editingTag ? `Edit Tag: #${editingTag.name}` : 'Create New Tag'}</span>
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white"
+                    onClick={() => setModalOpen(false)}
+                  ></button>
                 </div>
-                <button
-                  type="button"
-                  className="boss-modal-close"
-                  onClick={() => setModalOpen(false)}
-                >
-                  ✕
-                </button>
-              </div>
 
-              <div className="boss-modal-body">
-                {errorMessage && (
-                  <div className="boss-toast-notification boss-toast-error">
-                    <span>⚠ {errorMessage}</span>
+                <div className="modal-body">
+                  {errorMessage && (
+                    <div className="alert alert-danger py-2 px-3 small mb-3">
+                      ⚠ {errorMessage}
+                    </div>
+                  )}
+
+                  <div className="mb-3">
+                    <label className="form-label small fw-semibold">Tag Name *</label>
+                    <input
+                      type="text"
+                      className="form-control bg-black text-light border-secondary"
+                      placeholder="e.g. Solar System, Black Holes, Space History"
+                      value={tagName}
+                      onChange={(e) => handleNameChange(e.target.value)}
+                      required
+                    />
                   </div>
-                )}
 
-                <div className="boss-field-group">
-                  <label className="boss-label">Tag Name *</label>
-                  <Input
-                    placeholder="e.g. Solar System, Black Holes, Space History"
-                    value={tagName}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    required
-                    className="boss-input"
-                  />
-                </div>
+                  <div className="mb-3">
+                    <label className="form-label small fw-semibold">Slug *</label>
+                    <input
+                      type="text"
+                      className="form-control bg-black text-light border-secondary"
+                      placeholder="solar-system"
+                      value={tagSlug}
+                      onChange={(e) => setTagSlug(e.target.value)}
+                      required
+                    />
+                  </div>
 
-                <div className="boss-field-group">
-                  <label className="boss-label">Slug *</label>
-                  <Input
-                    placeholder="solar-system"
-                    value={tagSlug}
-                    onChange={(e) => setTagSlug(e.target.value)}
-                    required
-                    className="boss-input"
-                  />
-                </div>
+                  <div className="mb-3">
+                    <label className="form-label small fw-semibold">Description (Optional)</label>
+                    <textarea
+                      className="form-control bg-black text-light border-secondary"
+                      rows={2}
+                      placeholder="Brief description of the subject or topic"
+                      value={tagDesc}
+                      onChange={(e) => setTagDesc(e.target.value)}
+                    />
+                  </div>
 
-                <div className="boss-field-group">
-                  <label className="boss-label">Description (Optional)</label>
-                  <TextArea
-                    placeholder="Brief description of the subject or topic"
-                    value={tagDesc}
-                    onChange={(e) => setTagDesc(e.target.value)}
-                    rows={2}
-                    className="boss-textarea"
-                  />
-                </div>
+                  <div className="mb-3">
+                    <label className="form-label small fw-semibold">Badge Color Tone</label>
+                    <div className="btn-group btn-group-sm w-100">
+                      {COLOR_OPTIONS.map((c) => (
+                        <button
+                          key={c.value}
+                          type="button"
+                          className={`btn ${tagColor === c.value ? 'btn-info fw-bold' : 'btn-outline-secondary text-light'}`}
+                          onClick={() => setTagColor(c.value)}
+                        >
+                          {c.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                <div className="boss-field-group">
-                  <label className="boss-label">Badge Color Tone</label>
-                  <div className="color-palette-options">
-                    {COLOR_OPTIONS.map((c) => (
-                      <button
-                        key={c.value}
-                        type="button"
-                        className={`color-choice-pill ${tagColor === c.value ? 'selected' : ''}`}
-                        onClick={() => setTagColor(c.value)}
-                      >
-                        <span
-                          className="color-dot"
-                          style={{ backgroundColor: c.hex }}
-                        ></span>
-                        <span>{c.label}</span>
-                      </button>
-                    ))}
+                  <div className="p-3 rounded bg-black border border-secondary text-center">
+                    <span className="text-muted small me-2">Badge Preview:</span>
+                    <span className={`badge ${getBadgeClass(tagColor)} fs-6 py-1 px-3`}>
+                      #{tagName || 'preview'}
+                    </span>
                   </div>
                 </div>
 
-                <div className="tag-preview-box">
-                  <span className="preview-label">Badge Preview:</span>
-                  <Chip size="md" variant="soft" className={`chip-${tagColor}`}>
-                    #{tagName || 'tag-preview'}
-                  </Chip>
+                <div className="modal-footer border-secondary">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary btn-sm"
+                    onClick={() => setModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-sm fw-bold px-4"
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Saving...' : editingTag ? 'Update Tag' : 'Create Tag'}
+                  </button>
                 </div>
-              </div>
-
-              <div className="boss-modal-footer">
-                <Button
-                  type="button"
-                  className="boss-btn-ghost"
-                  onClick={() => setModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="boss-btn-primary"
-                  isDisabled={submitting}
-                >
-                  {submitting ? 'Saving...' : editingTag ? 'Update Tag' : 'Create Tag'}
-                </Button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       )}

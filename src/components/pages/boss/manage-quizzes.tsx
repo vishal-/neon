@@ -1,6 +1,5 @@
 import { useState, useEffect, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Card, Chip, Input } from '@heroui/react'
 import { BossLayout } from './boss-layout'
 import { Icon } from '../../ui/icon'
 import { Icons } from '../../ui/icons'
@@ -106,35 +105,37 @@ export const ManageQuizzesPage: FC = () => {
       title="Manage Galactic Quizzes"
       subtitle="View, create, configure contests, time limits, and question assignments"
       action={
-        <Button
-          className="boss-btn-primary"
+        <button
+          type="button"
+          className="btn btn-primary btn-sm fw-bold"
           onClick={() => navigate('/boss/quiz/new')}
         >
           + Create New Quiz
-        </Button>
+        </button>
       }
     >
       {statusMessage && (
-        <div className="boss-toast-notification">
-          <span>✓ {statusMessage}</span>
+        <div className="alert alert-success py-2 px-3 small mb-3" role="alert">
+          ✓ {statusMessage}
         </div>
       )}
 
       {/* Control Bar: Search & Filters */}
-      <div className="boss-filter-bar">
-        <div className="boss-search-wrapper">
-          <Input
+      <div className="row g-2 mb-3 align-items-center">
+        <div className="col-12 col-md-8">
+          <input
+            type="search"
+            className="form-control bg-dark text-light border-secondary"
             placeholder="Search quizzes by title, slug, category..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="boss-search-input"
           />
         </div>
 
-        <div className="boss-filter-group">
-          <label className="boss-filter-label">Difficulty:</label>
+        <div className="col-12 col-md-4 d-flex align-items-center gap-2">
+          <label className="text-muted small fw-semibold text-nowrap mb-0">Difficulty:</label>
           <select
-            className="boss-select"
+            className="form-select bg-dark text-light border-secondary"
             value={filterDifficulty}
             onChange={(e) => setFilterDifficulty(e.target.value)}
           >
@@ -147,103 +148,106 @@ export const ManageQuizzesPage: FC = () => {
       </div>
 
       {/* Quizzes Table Card */}
-      <Card className="boss-table-card">
+      <div className="card bg-dark text-light border border-secondary shadow-sm overflow-hidden">
         {loading ? (
-          <div className="boss-table-loading">Loading cosmic quizzes...</div>
+          <div className="p-5 text-center text-muted">
+            <div className="spinner-border spinner-border-sm text-info me-2" role="status"></div>
+            <span>Loading cosmic quizzes...</span>
+          </div>
         ) : filteredQuizzes.length === 0 ? (
-          <div className="boss-empty-placeholder">
-            <Icon icon={Icons.quiz} size={36} />
-            <h3>No quizzes match your filters</h3>
-            <p>Try clearing your search query or create a brand new quiz contest.</p>
-            <Button
-              className="boss-btn-secondary"
+          <div className="p-5 text-center text-muted">
+            <div className="mb-2 text-warning">
+              <Icon icon={Icons.quiz} size={40} />
+            </div>
+            <h5 className="fw-bold text-light">No quizzes match your filters</h5>
+            <p className="small mb-3">Try clearing your search query or create a brand new quiz contest.</p>
+            <button
+              type="button"
+              className="btn btn-outline-info btn-sm"
               onClick={() => navigate('/boss/quiz/new')}
             >
               Compose Quiz
-            </Button>
+            </button>
           </div>
         ) : (
-          <div className="boss-table-responsive">
-            <table className="boss-data-table">
-              <thead>
+          <div className="table-responsive">
+            <table className="table table-dark table-hover align-middle mb-0">
+              <thead className="table-active">
                 <tr>
-                  <th>Quiz Info</th>
-                  <th>Category</th>
-                  <th>Difficulty</th>
-                  <th>Questions</th>
-                  <th>Time / XP</th>
-                  <th>Status</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
+                  <th scope="col">Quiz Info</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Difficulty</th>
+                  <th scope="col">Questions</th>
+                  <th scope="col">Time / XP</th>
+                  <th scope="col">Status</th>
+                  <th scope="col" className="text-end">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredQuizzes.map((quiz) => (
                   <tr key={quiz.id}>
                     <td>
-                      <div className="table-main-title">{quiz.title}</div>
-                      <div className="table-sub-meta">/{quiz.slug}</div>
+                      <div className="fw-semibold text-light">{quiz.title}</div>
+                      <div className="text-muted small">/{quiz.slug}</div>
                     </td>
                     <td>
-                      <span className="table-category-tag">
+                      <span className="badge text-bg-secondary bg-opacity-75">
                         {quiz.category || 'General'}
                       </span>
                     </td>
                     <td>
-                      <Chip
-                        size="sm"
-                        variant="soft"
-                        className={
+                      <span
+                        className={`badge ${
                           quiz.difficulty === 'easy'
-                            ? 'chip-green'
+                            ? 'text-bg-success'
                             : quiz.difficulty === 'hard'
-                            ? 'chip-rose'
-                            : 'chip-gold'
-                        }
+                            ? 'text-bg-danger'
+                            : 'text-bg-warning'
+                        }`}
                       >
                         {quiz.difficulty}
-                      </Chip>
+                      </span>
                     </td>
                     <td>
-                      <Chip size="sm" variant="soft" className="chip-purple">
+                      <span className="badge text-bg-primary">
                         {quiz.questionsCount} Questions
-                      </Chip>
+                      </span>
                     </td>
                     <td>
-                      <div className="table-num-stat">
-                        {quiz.timeLimitSeconds > 0
-                          ? `${quiz.timeLimitSeconds}s`
-                          : 'Untimed'}
+                      <div>
+                        {quiz.timeLimitSeconds > 0 ? `${quiz.timeLimitSeconds}s` : 'Untimed'}
                       </div>
-                      <div className="table-sub-meta">+{quiz.rewardXp} XP</div>
+                      <div className="text-info small fw-bold">+{quiz.rewardXp} XP</div>
                     </td>
                     <td>
                       <button
                         type="button"
-                        className={`status-pill-toggle ${quiz.isActive ? 'active' : 'inactive'}`}
+                        className={`btn btn-sm py-0 px-2 fw-semibold ${
+                          quiz.isActive ? 'btn-outline-success' : 'btn-outline-secondary'
+                        }`}
                         onClick={() => handleToggleActive(quiz)}
-                        title="Click to toggle status"
+                        title="Click to toggle active status"
                       >
-                        <span className="status-dot"></span>
-                        <span>{quiz.isActive ? 'Active' : 'Draft'}</span>
+                        {quiz.isActive ? 'Active' : 'Draft'}
                       </button>
                     </td>
-                    <td>
-                      <div className="table-actions-cell">
-                        <Button
-                          size="sm"
-                          className="boss-btn-ghost"
+                    <td className="text-end">
+                      <div className="btn-group btn-group-sm">
+                        <button
+                          type="button"
+                          className="btn btn-outline-info"
                           onClick={() => navigate(`/boss/quiz/${quiz.id}`)}
                         >
                           Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="boss-btn-danger"
-                          isDisabled={deletingId === quiz.id}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger"
+                          disabled={deletingId === quiz.id}
                           onClick={() => handleDelete(quiz.id, quiz.title)}
                         >
                           {deletingId === quiz.id ? '...' : 'Delete'}
-                        </Button>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -252,7 +256,7 @@ export const ManageQuizzesPage: FC = () => {
             </table>
           </div>
         )}
-      </Card>
+      </div>
     </BossLayout>
   )
 }
