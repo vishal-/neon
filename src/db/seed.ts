@@ -1,4 +1,5 @@
 import { seedTags } from './seed-tags'
+import { seedSpaceTriviaQuiz } from './seed-quizzes'
 
 /**
  * Master Database Seeding Script
@@ -10,6 +11,9 @@ async function main() {
   try {
     // 1. Seed Tags
     await seedTags()
+
+    // 2. Seed Space Trivia Quiz & Questions
+    await seedSpaceTriviaQuiz()
 
     console.log('✅ All database seeds executed successfully!')
   } catch (err) {
