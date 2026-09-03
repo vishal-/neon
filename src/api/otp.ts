@@ -85,7 +85,7 @@ otpApi.post('/verify', async (c) => {
           error: 'Authentication Failed',
           message: errorData.message || 'Invalid or expired access code. Please try again.',
         },
-        authResponse.status || 400
+        (authResponse.status || 400) as any
       )
     }
 

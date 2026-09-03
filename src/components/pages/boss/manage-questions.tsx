@@ -211,7 +211,7 @@ export const ManageQuestionsPage: FC = () => {
                     <td>
                       <Chip
                         size="sm"
-                        variant="flat"
+                        variant="soft"
                         className={
                           q.difficulty === 'easy'
                             ? 'chip-green'
@@ -232,7 +232,7 @@ export const ManageQuestionsPage: FC = () => {
                             <Chip
                               key={tag.id}
                               size="sm"
-                              variant="flat"
+                              variant="soft"
                               className={`chip-${tag.color || 'teal'}`}
                             >
                               #{tag.name}

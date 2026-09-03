@@ -388,7 +388,7 @@ export const EditQuizPage: FC = () => {
                       <div className="assigned-q-text">{q.questionText}</div>
                       <div className="assigned-q-meta">
                         <span className="ans-preview">Ans: {q.correctAnswer}</span>
-                        <Chip size="sm" variant="flat" className="chip-purple">
+                        <Chip size="sm" variant="soft" className="chip-purple">
                           {q.category}
                         </Chip>
                       </div>
@@ -475,14 +475,14 @@ export const EditQuizPage: FC = () => {
                       <div className="modal-q-details">
                         <div className="modal-q-text">{q.questionText}</div>
                         <div className="modal-q-tags">
-                          <Chip size="sm" variant="flat" className="chip-gold">
+                          <Chip size="sm" variant="soft" className="chip-gold">
                             {q.difficulty}
                           </Chip>
-                          <Chip size="sm" variant="flat" className="chip-purple">
+                          <Chip size="sm" variant="soft" className="chip-purple">
                             {q.category}
                           </Chip>
                           {q.tags?.map((t) => (
-                            <Chip key={t.id} size="sm" variant="flat" className="chip-cyan">
+                            <Chip key={t.id} size="sm" variant="soft" className="chip-cyan">
                               #{t.name}
                             </Chip>
                           ))}

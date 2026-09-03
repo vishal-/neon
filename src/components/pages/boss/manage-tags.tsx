@@ -226,7 +226,7 @@ export const ManageTagsPage: FC = () => {
                       <div className="tag-name-cell">
                         <Chip
                           size="md"
-                          variant="flat"
+                          variant="soft"
                           className={`chip-${tag.color || 'teal'}`}
                         >
                           #{tag.name}
@@ -242,7 +242,7 @@ export const ManageTagsPage: FC = () => {
                       </span>
                     </td>
                     <td>
-                      <Chip size="sm" variant="flat" className="chip-purple">
+                      <Chip size="sm" variant="soft" className="chip-purple">
                         {tag.questionsCount} {tag.questionsCount === 1 ? 'Question' : 'Questions'}
                       </Chip>
                     </td>
@@ -354,7 +354,7 @@ export const ManageTagsPage: FC = () => {
 
                 <div className="tag-preview-box">
                   <span className="preview-label">Badge Preview:</span>
-                  <Chip size="md" variant="flat" className={`chip-${tagColor}`}>
+                  <Chip size="md" variant="soft" className={`chip-${tagColor}`}>
                     #{tagName || 'tag-preview'}
                   </Chip>
                 </div>

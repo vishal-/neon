@@ -191,7 +191,7 @@ export const ManageQuizzesPage: FC = () => {
                     <td>
                       <Chip
                         size="sm"
-                        variant="flat"
+                        variant="soft"
                         className={
                           quiz.difficulty === 'easy'
                             ? 'chip-green'
@@ -204,7 +204,7 @@ export const ManageQuizzesPage: FC = () => {
                       </Chip>
                     </td>
                     <td>
-                      <Chip size="sm" variant="flat" className="chip-purple">
+                      <Chip size="sm" variant="soft" className="chip-purple">
                         {quiz.questionsCount} Questions
                       </Chip>
                     </td>

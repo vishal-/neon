@@ -80,7 +80,7 @@ export const BossDashboard: FC = () => {
             <span className="boss-metric-icon">
               <Icon icon={Icons.quiz} size={24} />
             </span>
-            <Chip size="sm" variant="flat" className="chip-cyan">
+            <Chip size="sm" variant="soft" className="chip-cyan">
               Contests
             </Chip>
           </div>
@@ -98,7 +98,7 @@ export const BossDashboard: FC = () => {
             <span className="boss-metric-icon">
               <Icon icon={Icons.brain} size={24} />
             </span>
-            <Chip size="sm" variant="flat" className="chip-purple">
+            <Chip size="sm" variant="soft" className="chip-purple">
               Bank
             </Chip>
           </div>
@@ -116,7 +116,7 @@ export const BossDashboard: FC = () => {
             <span className="boss-metric-icon">
               <Icon icon={Icons.sparkles} size={24} />
             </span>
-            <Chip size="sm" variant="flat" className="chip-gold">
+            <Chip size="sm" variant="soft" className="chip-gold">
               Taxonomy
             </Chip>
           </div>
@@ -134,7 +134,7 @@ export const BossDashboard: FC = () => {
             <span className="boss-metric-icon">
               <Icon icon={Icons.trophy} size={24} />
             </span>
-            <Chip size="sm" variant="flat" className="chip-rose">
+            <Chip size="sm" variant="soft" className="chip-rose">
               Activity
             </Chip>
           </div>
@@ -240,7 +240,7 @@ export const BossDashboard: FC = () => {
                   <div className="panel-item-actions">
                     <Chip
                       size="sm"
-                      variant="flat"
+                      variant="soft"
                       className={
                         quiz.difficulty === 'easy'
                           ? 'chip-green'
@@ -301,7 +301,7 @@ export const BossDashboard: FC = () => {
                     </span>
                   </div>
                   <div className="panel-item-actions">
-                    <Chip size="sm" variant="flat" className="chip-purple">
+                    <Chip size="sm" variant="soft" className="chip-purple">
                       {q.category || 'General'}
                     </Chip>
                     <Button

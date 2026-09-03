@@ -1,4 +1,4 @@
-import type { FC } from 'hono/jsx'
+import type { FC } from 'react'
 import { Icon } from '../ui/icon'
 import { Icons } from '../ui/icons'
 
@@ -9,7 +9,7 @@ export const AuthModal: FC = () => {
       <div 
         id="authModalBackdrop" 
         className="auth-modal-backdrop" 
-        onclick="window.closeAuthModal();"
+        onClick={() => (window as any).closeAuthModal?.()}
         aria-hidden="true"
       ></div>
 
@@ -17,8 +17,9 @@ export const AuthModal: FC = () => {
       <div id="authModal" className="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
         {/* Close Button */}
         <button 
+          type="button"
           className="btn-auth-modal-close" 
-          onclick="window.closeAuthModal();" 
+          onClick={() => (window as any).closeAuthModal?.()} 
           aria-label="Close Modal"
         >
           <Icon icon={Icons.close} size={18} />
@@ -34,7 +35,7 @@ export const AuthModal: FC = () => {
         </div>
 
         {/* STEP 1: Email Form */}
-        <form id="authEmailForm" className="auth-step-form" onsubmit="window.handleSendOtp(event);">
+        <form id="authEmailForm" className="auth-step-form" onSubmit={(e) => (window as any).handleSendOtp?.(e)}>
           <div className="form-group">
             <label htmlFor="authEmailInput" className="form-label">Parent or Cadet Email</label>
             <input 
@@ -43,7 +44,7 @@ export const AuthModal: FC = () => {
               className="auth-input" 
               placeholder="e.g. explorer@example.com" 
               required 
-              autocomplete="email"
+              autoComplete="email"
             />
           </div>
 
@@ -54,10 +55,10 @@ export const AuthModal: FC = () => {
         </form>
 
         {/* STEP 2: OTP Verification Form */}
-        <form id="authOtpForm" className="auth-step-form" style={{ display: 'none' }} onsubmit="window.handleVerifyOtp(event);">
+        <form id="authOtpForm" className="auth-step-form" style={{ display: 'none' }} onSubmit={(e) => (window as any).handleVerifyOtp?.(e)}>
           <div className="otp-sent-banner">
             <span>Code sent to <strong id="authTargetEmail">email</strong></span>
-            <button type="button" className="btn-change-email" onclick="window.backToEmailStep();">Change</button>
+            <button type="button" className="btn-change-email" onClick={() => (window as any).backToEmailStep?.()}>Change</button>
           </div>
 
           <div className="form-group">
@@ -70,7 +71,7 @@ export const AuthModal: FC = () => {
               maxLength={6} 
               pattern="[0-9]{6}" 
               required 
-              autocomplete="one-time-code"
+              autoComplete="one-time-code"
             />
           </div>
 
@@ -81,7 +82,7 @@ export const AuthModal: FC = () => {
 
           <div className="resend-row">
             <span>Didn't receive the code?</span>
-            <button type="button" className="btn-resend" onclick="window.handleResendOtp();">Resend Code</button>
+            <button type="button" className="btn-resend" onClick={() => (window as any).handleResendOtp?.()}>Resend Code</button>
           </div>
         </form>
 

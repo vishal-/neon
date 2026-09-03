@@ -126,7 +126,7 @@ export const BossLayout: FC<BossLayoutProps> = ({ children, title, subtitle, act
               <div className="boss-logo-badge">⚡ BOSS</div>
               <span className="boss-brand-title">Mission Control</span>
             </Link>
-            <Chip size="sm" variant="flat" className="boss-chip-role">
+            <Chip size="sm" variant="soft" className="boss-chip-role">
               Admin HQ
             </Chip>
           </div>
