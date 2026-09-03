@@ -19,7 +19,6 @@ export const EditQuestionPage: FC = () => {
   const [options, setOptions] = useState<string[]>(['', ''])
   const [correctAnswer, setCorrectAnswer] = useState('')
   const [explanation, setExplanation] = useState('')
-  const [category, setCategory] = useState('Cosmic Trivia')
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
 
@@ -64,7 +63,6 @@ export const EditQuestionPage: FC = () => {
           setOptions(opts)
           setCorrectAnswer(q.correctAnswer || '')
           setExplanation(q.explanation || '')
-          setCategory(q.category || 'Cosmic Trivia')
           setDifficulty(q.difficulty || 'medium')
           setSelectedTagIds(Array.isArray(q.tags) ? q.tags.map((t: any) => t.id) : [])
         } else {
@@ -111,8 +109,11 @@ export const EditQuestionPage: FC = () => {
 
   // Quick create tag
   const handleQuickCreateTag = async () => {
-    const name = newTagInput.trim()
-    if (!name) return
+    const name = newTagInput.trim().toLowerCase().replace(/[^a-z]/g, '')
+    if (!name) {
+      alert('Tags must contain only lowercase letters (a-z) with no spaces or symbols.')
+      return
+    }
 
     setCreatingTag(true)
     try {
@@ -129,6 +130,8 @@ export const EditQuestionPage: FC = () => {
         setAllTags((prev) => [...prev, data.tag])
         setSelectedTagIds((prev) => [...prev, data.tag.id])
         setNewTagInput('')
+      } else {
+        alert(data.message || 'Failed to create tag')
       }
     } catch (err: any) {
       alert(err?.message || 'Failed to create tag')
@@ -165,7 +168,6 @@ export const EditQuestionPage: FC = () => {
       options: cleanOptions,
       correctAnswer: correctAnswer.trim(),
       explanation: explanation.trim(),
-      category: category.trim(),
       difficulty,
       tagIds: selectedTagIds,
     }
@@ -376,17 +378,6 @@ export const EditQuestionPage: FC = () => {
             <h5 className="fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">
               Taxonomy & Categorization
             </h5>
-
-            <div className="mb-3">
-              <label className="form-label small fw-semibold">Category</label>
-              <input
-                type="text"
-                className="form-control bg-dark text-light border-secondary"
-                placeholder="e.g. Astronomy, Biology, Geography"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
-            </div>
 
             <div className="mb-3">
               <label className="form-label small fw-semibold">Difficulty Level</label>

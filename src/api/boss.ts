@@ -9,6 +9,9 @@ import {
   tags as tagsTable,
   questionTags as questionTagsTable,
   attempts as attemptsTable,
+  QUIZ_CATEGORIES,
+  isValidTag,
+  type QuizCategory,
 } from '../db'
 import { createAuth, type AuthEnv } from '../lib/auth'
 
@@ -218,6 +221,14 @@ bossApi.get('/quizzes/:id', async (c) => {
 })
 
 /**
+ * GET /api/boss/categories
+ * Returns the exhaustive list of quiz categories.
+ */
+bossApi.get('/categories', async (c) => {
+  return c.json({ success: true, categories: QUIZ_CATEGORIES })
+})
+
+/**
  * POST /api/boss/quizzes
  * Create new quiz and optionally assign questions
  */
@@ -236,6 +247,8 @@ bossApi.post('/quizzes', async (c) => {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '') || `quiz-${Date.now()}`
 
+  const category = (QUIZ_CATEGORIES.includes(body.category) ? body.category : 'general') as QuizCategory
+
   try {
     const newQuizId = crypto.randomUUID()
     const [inserted] = await db
@@ -245,7 +258,7 @@ bossApi.post('/quizzes', async (c) => {
         title,
         slug,
         description: body.description || '',
-        category: body.category || 'Cosmic Trivia',
+        category,
         difficulty: body.difficulty || 'medium',
         timeLimitSeconds: Number(body.timeLimitSeconds) || 0,
         rewardXp: Number(body.rewardXp) || 100,
@@ -296,7 +309,7 @@ bossApi.put('/quizzes/:id', async (c) => {
         title,
         slug,
         description: body.description ?? '',
-        category: body.category ?? 'Cosmic Trivia',
+        category: (QUIZ_CATEGORIES.includes(body.category) ? body.category : 'general') as QuizCategory,
         difficulty: body.difficulty ?? 'medium',
         timeLimitSeconds: !isNaN(Number(body.timeLimitSeconds)) ? Number(body.timeLimitSeconds) : 0,
         rewardXp: !isNaN(Number(body.rewardXp)) ? Number(body.rewardXp) : 100,
@@ -360,22 +373,11 @@ bossApi.get('/questions', async (c) => {
   const difficulty = c.req.query('difficulty')
   const tagId = c.req.query('tagId') ? Number(c.req.query('tagId')) : null
 
-  let allQuestions = await db
+  const allQuestions = await db
     .select()
     .from(questionsTable)
     .orderBy(desc(questionsTable.createdAt))
 
-  if (search) {
-    allQuestions = allQuestions.filter(
-      (q) =>
-        q.questionText.toLowerCase().includes(search) ||
-        (q.category && q.category.toLowerCase().includes(search))
-    )
-  }
-
-  if (difficulty && difficulty !== 'all') {
-    allQuestions = allQuestions.filter((q) => q.difficulty === difficulty)
-  }
 
   // Fetch all question-tag links
   const questionTagRows = await db
@@ -398,6 +400,18 @@ bossApi.get('/questions', async (c) => {
     tags: tagsByQuestionId.get(q.id) || [],
   }))
 
+  if (search) {
+    questionsWithTags = questionsWithTags.filter(
+      (q) =>
+        q.questionText.toLowerCase().includes(search) ||
+        q.tags.some((t: any) => t.name.toLowerCase().includes(search))
+    )
+  }
+
+  if (difficulty && difficulty !== 'all') {
+    questionsWithTags = questionsWithTags.filter((q) => q.difficulty === difficulty)
+  }
+
   if (tagId) {
     questionsWithTags = questionsWithTags.filter((q) =>
       q.tags.some((t: any) => t.id === tagId)
@@ -414,7 +428,6 @@ bossApi.get('/questions', async (c) => {
 bossApi.get('/questions/:id', async (c) => {
   const db = getDb(c.env)
   const qId = Number(c.req.param('id'))
-
   if (isNaN(qId)) {
     return c.json({ error: 'Bad Request', message: 'Invalid question ID' }, 400)
   }
@@ -424,7 +437,6 @@ bossApi.get('/questions/:id', async (c) => {
     return c.json({ error: 'Not Found', message: 'Question not found' }, 404)
   }
 
-  // Get tags
   const tagRows = await db
     .select({ tag: tagsTable })
     .from(questionTagsTable)
@@ -442,7 +454,7 @@ bossApi.get('/questions/:id', async (c) => {
 
 /**
  * POST /api/boss/questions
- * Create question and associate tags
+ * Create new question and assign tags
  */
 bossApi.post('/questions', async (c) => {
   const db = getDb(c.env)
@@ -473,7 +485,6 @@ bossApi.post('/questions', async (c) => {
         correctAnswer,
         explanation: body.explanation || '',
         difficulty: body.difficulty || 'medium',
-        category: body.category || 'General',
       })
       .returning()
 
@@ -529,7 +540,6 @@ bossApi.put('/questions/:id', async (c) => {
         correctAnswer,
         explanation: body.explanation ?? '',
         difficulty: body.difficulty ?? 'medium',
-        category: body.category ?? 'General',
         updatedAt: new Date(),
       })
       .where(eq(questionsTable.id, qId))
@@ -617,16 +627,22 @@ bossApi.post('/tags', async (c) => {
   const db = getDb(c.env)
   const body = await c.req.json().catch(() => ({}))
 
-  const name = (body.name || '').trim()
-  if (!name) {
+  const rawName = (body.name || '').trim().toLowerCase()
+  if (!rawName) {
     return c.json({ error: 'Validation Error', message: 'Tag name is required' }, 400)
   }
+  if (!isValidTag(rawName)) {
+    return c.json(
+      {
+        error: 'Validation Error',
+        message: 'Tags must contain only lowercase alphabetical letters (a-z) with no spaces, numbers, or special characters.',
+      },
+      400
+    )
+  }
 
-  const slug = (body.slug || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '') || name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+  const name = rawName
+  const slug = rawName
 
   const color = body.color || 'teal'
   const description = body.description || ''
@@ -660,16 +676,22 @@ bossApi.put('/tags/:id', async (c) => {
   }
 
   const body = await c.req.json().catch(() => ({}))
-  const name = (body.name || '').trim()
-  if (!name) {
+  const rawName = (body.name || '').trim().toLowerCase()
+  if (!rawName) {
     return c.json({ error: 'Validation Error', message: 'Tag name is required' }, 400)
   }
+  if (!isValidTag(rawName)) {
+    return c.json(
+      {
+        error: 'Validation Error',
+        message: 'Tags must contain only lowercase alphabetical letters (a-z) with no spaces, numbers, or special characters.',
+      },
+      400
+    )
+  }
 
-  const slug = (body.slug || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '') || name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+  const name = rawName
+  const slug = rawName
 
   try {
     const [updated] = await db

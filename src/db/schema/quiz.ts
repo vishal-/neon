@@ -1,9 +1,18 @@
 import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core'
 import { user } from './auth'
 
+import {
+  QUIZ_CATEGORIES,
+  isValidTag,
+  type QuizCategory,
+} from '../../lib/constants'
+
+export { QUIZ_CATEGORIES, isValidTag, type QuizCategory }
+
 /**
  * Reusable Question Bank Table
- * Stores standalone multiple-choice questions categorized by difficulty and topic.
+ * Stores standalone multiple-choice questions categorized by difficulty.
+ * Questions are mapped to tags for multi-dimensional topic categorization.
  */
 export const questions = sqliteTable('questions', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
@@ -14,7 +23,6 @@ export const questions = sqliteTable('questions', {
   difficulty: text('difficulty', { enum: ['easy', 'medium', 'hard'] })
     .notNull()
     .default('medium'),
-  category: text('category'),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -24,8 +32,8 @@ export const questions = sqliteTable('questions', {
 })
 
 /**
- * Quiz Contests Metadata Table
- * Represents a quiz or competitive contest activity.
+ * Quizzes Table
+ * Represents an overarching quiz mission with assigned questions.
  */
 export const quizzes = sqliteTable('quizzes', {
   id: text('id')
@@ -34,7 +42,7 @@ export const quizzes = sqliteTable('quizzes', {
   title: text('title').notNull(),
   slug: text('slug').notNull().unique(),
   description: text('description'),
-  category: text('category'),
+  category: text('category', { enum: QUIZ_CATEGORIES }).notNull().default('general'),
   difficulty: text('difficulty', { enum: ['easy', 'medium', 'hard'] })
     .notNull()
     .default('medium'),

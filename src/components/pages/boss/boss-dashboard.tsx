@@ -26,7 +26,6 @@ interface RecentQuestion {
   id: number
   questionText: string
   difficulty: string
-  category: string
   correctAnswer: string
 }
 
@@ -337,8 +336,16 @@ export const BossDashboard: FC = () => {
                         </div>
                       </div>
                       <div className="d-flex align-items-center gap-2 flex-shrink-0">
-                        <span className="badge text-bg-secondary">
-                          {q.category || 'General'}
+                        <span
+                          className={`badge ${
+                            q.difficulty === 'easy'
+                              ? 'text-bg-success'
+                              : q.difficulty === 'hard'
+                              ? 'text-bg-danger'
+                              : 'text-bg-warning'
+                          }`}
+                        >
+                          {q.difficulty}
                         </span>
                         <button
                           type="button"

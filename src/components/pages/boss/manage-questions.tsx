@@ -1,8 +1,6 @@
-import { useState, useEffect, type FC } from 'react'
+import { useState, useEffect, useCallback, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BossLayout } from './boss-layout'
-import { Icon } from '../../ui/icon'
-import { Icons } from '../../ui/icons'
 
 interface TagInfo {
   id: number
@@ -11,14 +9,13 @@ interface TagInfo {
   color: string
 }
 
-interface QuestionItem {
+export interface QuestionItem {
   id: number
   questionText: string
   options: string[]
   correctAnswer: string
   explanation?: string
   difficulty: 'easy' | 'medium' | 'hard'
-  category?: string
   tags: TagInfo[]
   createdAt: string
 }
@@ -28,13 +25,13 @@ export const ManageQuestionsPage: FC = () => {
   const [allTags, setAllTags] = useState<TagInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [filterDifficulty, setFilterDifficulty] = useState('all')
+  const [filterDifficulty, setFilterDifficulty] = useState<string>('all')
   const [filterTagId, setFilterTagId] = useState<string>('all')
-  const [deletingId, setDeletingId] = useState<number | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
   const navigate = useNavigate()
 
-  const loadQuestions = () => {
+  const loadQuestions = useCallback(() => {
     setLoading(true)
     fetch('/api/boss/questions')
       .then((res) => res.json())
@@ -45,7 +42,7 @@ export const ManageQuestionsPage: FC = () => {
       })
       .catch((err) => console.error('Failed to load questions:', err))
       .finally(() => setLoading(false))
-  }
+  }, [])
 
   const loadTags = () => {
     fetch('/api/boss/tags')
@@ -61,11 +58,10 @@ export const ManageQuestionsPage: FC = () => {
   useEffect(() => {
     loadQuestions()
     loadTags()
-  }, [])
+  }, [loadQuestions])
 
-  const handleDelete = async (id: number, text: string) => {
-    const preview = text.length > 40 ? text.slice(0, 40) + '...' : text
-    if (!window.confirm(`Are you sure you want to delete question "${preview}"? This will detach it from any quizzes.`)) {
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this question? It will be removed from all associated quizzes.')) {
       return
     }
 
@@ -74,8 +70,8 @@ export const ManageQuestionsPage: FC = () => {
       const res = await fetch(`/api/boss/questions/${id}`, { method: 'DELETE' })
       const data = await res.json()
       if (data.success) {
-        setStatusMessage('Question deleted successfully.')
         setQuestions((prev) => prev.filter((q) => q.id !== id))
+        setStatusMessage('Question deleted successfully.')
       } else {
         alert(data.message || 'Failed to delete question')
       }
@@ -90,7 +86,7 @@ export const ManageQuestionsPage: FC = () => {
   const filteredQuestions = questions.filter((q) => {
     const matchesSearch =
       q.questionText.toLowerCase().includes(search.toLowerCase()) ||
-      (q.category && q.category.toLowerCase().includes(search.toLowerCase()))
+      q.tags.some((t) => t.name.toLowerCase().includes(search.toLowerCase()))
 
     const matchesDifficulty =
       filterDifficulty === 'all' || q.difficulty === filterDifficulty
@@ -127,14 +123,13 @@ export const ManageQuestionsPage: FC = () => {
           <input
             type="search"
             className="form-control bg-dark text-light border-secondary"
-            placeholder="Search questions by text or category..."
+            placeholder="Search questions by text or tags..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="col-6 col-md-3 d-flex align-items-center gap-2">
-          <label className="text-muted small fw-semibold text-nowrap mb-0">Difficulty:</label>
+        <div className="col-6 col-md-3">
           <select
             className="form-select bg-dark text-light border-secondary"
             value={filterDifficulty}
@@ -147,14 +142,13 @@ export const ManageQuestionsPage: FC = () => {
           </select>
         </div>
 
-        <div className="col-6 col-md-3 d-flex align-items-center gap-2">
-          <label className="text-muted small fw-semibold text-nowrap mb-0">Tag:</label>
+        <div className="col-6 col-md-3">
           <select
             className="form-select bg-dark text-light border-secondary"
             value={filterTagId}
             onChange={(e) => setFilterTagId(e.target.value)}
           >
-            <option value="all">All Tags</option>
+            <option value="all">All Topics / Tags</option>
             {allTags.map((t) => (
               <option key={t.id} value={String(t.id)}>
                 #{t.name}
@@ -165,34 +159,28 @@ export const ManageQuestionsPage: FC = () => {
       </div>
 
       {/* Questions Table */}
-      <div className="card bg-dark text-light border border-secondary shadow-sm overflow-hidden">
+      <div className="card bg-dark text-light border border-secondary shadow-sm">
+        <div className="card-header bg-dark border-secondary d-flex justify-content-between align-items-center">
+          <span className="fw-semibold small text-muted text-uppercase">
+            Questions ({filteredQuestions.length} of {questions.length})
+          </span>
+        </div>
+
         {loading ? (
           <div className="p-5 text-center text-muted">
             <div className="spinner-border spinner-border-sm text-info me-2" role="status"></div>
-            <span>Scanning question bank...</span>
+            Loading questions bank...
           </div>
         ) : filteredQuestions.length === 0 ? (
           <div className="p-5 text-center text-muted">
-            <div className="mb-2 text-warning">
-              <Icon icon={Icons.brain} size={40} />
-            </div>
-            <h5 className="fw-bold text-light">No questions found matching criteria</h5>
-            <p className="small mb-3">Adjust your search filters or compose a brand new question with answers and tags.</p>
-            <button
-              type="button"
-              className="btn btn-outline-info btn-sm"
-              onClick={() => navigate('/boss/question/new')}
-            >
-              Compose Question
-            </button>
+            No questions found matching your filter criteria.
           </div>
         ) : (
           <div className="table-responsive">
             <table className="table table-dark table-hover align-middle mb-0">
               <thead className="table-active">
                 <tr>
-                  <th scope="col" style={{ width: '38%' }}>Question</th>
-                  <th scope="col">Category</th>
+                  <th scope="col" style={{ width: '45%' }}>Question</th>
                   <th scope="col">Difficulty</th>
                   <th scope="col">Tags</th>
                   <th scope="col">Correct Answer</th>
@@ -209,11 +197,6 @@ export const ManageQuestionsPage: FC = () => {
                           💡 {q.explanation}
                         </div>
                       )}
-                    </td>
-                    <td>
-                      <span className="badge text-bg-secondary bg-opacity-75">
-                        {q.category || 'General'}
-                      </span>
                     </td>
                     <td>
                       <span
@@ -263,7 +246,7 @@ export const ManageQuestionsPage: FC = () => {
                           type="button"
                           className="btn btn-outline-danger"
                           disabled={deletingId === q.id}
-                          onClick={() => handleDelete(q.id, q.questionText)}
+                          onClick={() => handleDelete(q.id)}
                         >
                           {deletingId === q.id ? '...' : 'Delete'}
                         </button>

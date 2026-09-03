@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { BossLayout } from './boss-layout'
 import { Icon } from '../../ui/icon'
 import { Icons } from '../../ui/icons'
+import { QUIZ_CATEGORIES } from '../../../lib/constants'
 
 interface QuizItem {
   id: string
@@ -23,6 +24,7 @@ export const ManageQuizzesPage: FC = () => {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filterDifficulty, setFilterDifficulty] = useState('all')
+  const [filterCategory, setFilterCategory] = useState('all')
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const navigate = useNavigate()
@@ -97,7 +99,10 @@ export const ManageQuizzesPage: FC = () => {
     const matchesDifficulty =
       filterDifficulty === 'all' || q.difficulty === filterDifficulty
 
-    return matchesSearch && matchesDifficulty
+    const matchesCategory =
+      filterCategory === 'all' || q.category === filterCategory
+
+    return matchesSearch && matchesDifficulty && matchesCategory
   })
 
   return (
@@ -122,7 +127,7 @@ export const ManageQuizzesPage: FC = () => {
 
       {/* Control Bar: Search & Filters */}
       <div className="row g-2 mb-3 align-items-center">
-        <div className="col-12 col-md-8">
+        <div className="col-12 col-md-6">
           <input
             type="search"
             className="form-control bg-dark text-light border-secondary"
@@ -132,8 +137,7 @@ export const ManageQuizzesPage: FC = () => {
           />
         </div>
 
-        <div className="col-12 col-md-4 d-flex align-items-center gap-2">
-          <label className="text-muted small fw-semibold text-nowrap mb-0">Difficulty:</label>
+        <div className="col-6 col-md-3">
           <select
             className="form-select bg-dark text-light border-secondary"
             value={filterDifficulty}
@@ -143,6 +147,21 @@ export const ManageQuizzesPage: FC = () => {
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
+          </select>
+        </div>
+
+        <div className="col-6 col-md-3">
+          <select
+            className="form-select bg-dark text-light border-secondary text-capitalize"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="all">All Categories</option>
+            {QUIZ_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
           </select>
         </div>
       </div>

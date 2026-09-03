@@ -3,12 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { BossLayout } from './boss-layout'
 import { Icon } from '../../ui/icon'
 import { Icons } from '../../ui/icons'
+import { QUIZ_CATEGORIES } from '../../../lib/constants'
 
 interface BankQuestion {
   id: number
   questionText: string
   difficulty: string
-  category: string
   correctAnswer: string
   tags?: Array<{ id: number; name: string; color: string }>
 }
@@ -22,7 +22,7 @@ export const EditQuizPage: FC = () => {
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
-  const [category, setCategory] = useState('Space Trivia')
+  const [category, setCategory] = useState<string>('general')
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
   const [timeLimitSeconds, setTimeLimitSeconds] = useState(60)
   const [rewardXp, setRewardXp] = useState(150)
@@ -64,7 +64,7 @@ export const EditQuizPage: FC = () => {
           setTitle(q.title || '')
           setSlug(q.slug || '')
           setDescription(q.description || '')
-          setCategory(q.category || 'Space Trivia')
+          setCategory(q.category || 'general')
           setDifficulty(q.difficulty || 'medium')
           setTimeLimitSeconds(q.timeLimitSeconds ?? 60)
           setRewardXp(q.rewardXp ?? 150)
@@ -111,11 +111,11 @@ export const EditQuizPage: FC = () => {
     setAssignedQuestions(updated)
   }
 
-  // Save quiz
+  // Save handler
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) {
-      setErrorMessage('Quiz title cannot be empty.')
+      setErrorMessage('Quiz Title is required.')
       return
     }
 
@@ -144,18 +144,18 @@ export const EditQuizPage: FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-
       const data = await res.json()
+
       if (data.success) {
-        setStatusMessage(isNew ? 'Quiz created successfully!' : 'Quiz updated successfully!')
+        setStatusMessage('Quiz configurations and question mappings saved successfully!')
         if (isNew && data.quiz?.id) {
-          navigate(`/boss/quiz/${data.quiz.id}`)
+          navigate(`/boss/quiz/${data.quiz.id}`, { replace: true })
         }
       } else {
         setErrorMessage(data.message || 'Failed to save quiz')
       }
     } catch (err: any) {
-      setErrorMessage(err?.message || 'Network error saving quiz')
+      setErrorMessage(err?.message || 'Error updating quiz')
     } finally {
       setSaving(false)
       setTimeout(() => setStatusMessage(null), 4000)
@@ -167,7 +167,7 @@ export const EditQuizPage: FC = () => {
       !assignedQuestions.some((assigned) => assigned.id === q.id) &&
       (questionSearch === '' ||
         q.questionText.toLowerCase().includes(questionSearch.toLowerCase()) ||
-        q.category.toLowerCase().includes(questionSearch.toLowerCase()))
+        (q.tags && q.tags.some((t) => t.name.toLowerCase().includes(questionSearch.toLowerCase()))))
   )
 
   if (loading) {
@@ -265,13 +265,17 @@ export const EditQuizPage: FC = () => {
             <div className="row g-3 mb-3">
               <div className="col-sm-6">
                 <label className="form-label small fw-semibold">Category</label>
-                <input
-                  type="text"
-                  className="form-control bg-dark text-light border-secondary"
-                  placeholder="e.g. Astronomy"
+                <select
+                  className="form-select bg-dark text-light border-secondary text-capitalize"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                />
+                >
+                  {QUIZ_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="col-sm-6">
@@ -371,7 +375,7 @@ export const EditQuizPage: FC = () => {
                     <div className="flex-grow-1 text-truncate">
                       <div className="small fw-semibold text-truncate">{q.questionText}</div>
                       <div className="text-muted small">
-                        Ans: <span className="text-info">{q.correctAnswer}</span> • {q.category}
+                        Ans: <span className="text-info">{q.correctAnswer}</span>
                       </div>
                     </div>
                     <div className="btn-group btn-group-sm">
@@ -465,7 +469,6 @@ export const EditQuizPage: FC = () => {
                           <div className="fw-semibold text-truncate mb-1">{q.questionText}</div>
                           <div className="d-flex flex-wrap gap-1 align-items-center">
                             <span className="badge text-bg-warning">{q.difficulty}</span>
-                            <span className="badge text-bg-secondary">{q.category}</span>
                             {q.tags?.map((t) => (
                               <span key={t.id} className="badge text-bg-info">
                                 #{t.name}

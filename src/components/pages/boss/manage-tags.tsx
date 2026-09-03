@@ -76,21 +76,16 @@ export const ManageTagsPage: FC = () => {
   }
 
   const handleNameChange = (val: string) => {
-    setTagName(val)
-    if (!editingTag || !tagSlug) {
-      setTagSlug(
-        val
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/(^-|-$)/g, '')
-      )
-    }
+    const clean = val.toLowerCase().replace(/[^a-z]/g, '')
+    setTagName(clean)
+    setTagSlug(clean)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!tagName.trim()) {
-      setErrorMessage('Tag name is required.')
+    const cleanName = tagName.trim().toLowerCase().replace(/[^a-z]/g, '')
+    if (!cleanName) {
+      setErrorMessage('Tag name must contain only lowercase letters (a-z) with no spaces, numbers, or special characters.')
       return
     }
 
@@ -98,8 +93,8 @@ export const ManageTagsPage: FC = () => {
     setErrorMessage(null)
 
     const payload = {
-      name: tagName.trim(),
-      slug: tagSlug.trim() || undefined,
+      name: cleanName,
+      slug: cleanName,
       description: tagDesc.trim(),
       color: tagColor,
     }
@@ -326,11 +321,14 @@ export const ManageTagsPage: FC = () => {
                     <input
                       type="text"
                       className="form-control bg-black text-light border-secondary"
-                      placeholder="e.g. Solar System, Black Holes, Space History"
+                      placeholder="e.g. astronomy, physics, biology"
                       value={tagName}
                       onChange={(e) => handleNameChange(e.target.value)}
                       required
                     />
+                    <div className="form-text text-muted" style={{ fontSize: '0.75rem' }}>
+                      Only lowercase alphabetical letters (a-z) with no spaces, numbers, or symbols.
+                    </div>
                   </div>
 
                   <div className="mb-3">
