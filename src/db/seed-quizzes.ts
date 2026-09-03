@@ -1,7 +1,28 @@
-import { createClient } from '@libsql/client/web'
+import { createClient, type Client } from '@libsql/client/web'
 import fs from 'fs'
 
-export const SPACE_TRIVIA_DATA = {
+export interface QuizSeedData {
+  quiz: {
+    id: string
+    title: string
+    slug: string
+    description: string
+    category: string
+    difficulty: string
+    timeLimitSeconds: number
+    rewardXp: number
+    isActive: boolean
+  }
+  tagNames: string[]
+  questions: Array<{
+    question_text: string
+    options: string[]
+    correct_answer: string
+    explanation: string
+  }>
+}
+
+export const SPACE_TRIVIA_DATA: QuizSeedData = {
   quiz: {
     id: 'space-trivia',
     title: 'Space Trivia',
@@ -13,6 +34,7 @@ export const SPACE_TRIVIA_DATA = {
     rewardXp: 150,
     isActive: true,
   },
+  tagNames: ['space', 'astronomy', 'science'],
   questions: [
     {
       question_text: 'Which planet is known as the red planet?',
@@ -107,46 +129,196 @@ export const SPACE_TRIVIA_DATA = {
   ],
 }
 
-export async function seedSpaceTriviaQuiz() {
-  let url = process.env.TURSO_DATABASE_URL
-  let authToken = process.env.TURSO_AUTH_TOKEN
+export const INDIAN_FREEDOM_STRUGGLE_DATA: QuizSeedData = {
+  quiz: {
+    id: 'indian-freedom-struggle',
+    title: 'Indian Freedom Struggle',
+    slug: 'indian-freedom-struggle',
+    description: "Test your knowledge of the major events, movements, leaders, and milestones of India's struggle for independence",
+    category: 'history',
+    difficulty: 'medium',
+    timeLimitSeconds: 300,
+    rewardXp: 150,
+    isActive: true,
+  },
+  tagNames: ['history', 'indianhistory', 'india', 'worldhistory'],
+  questions: [
+    {
+      question_text: 'In which year did the Indian Rebellion of 1857 begin?',
+      options: ['1757', '1857', '1885', '1905'],
+      correct_answer: '1857',
+      explanation: 'The Indian Rebellion of 1857 began in May 1857 and became a major uprising against British rule in India.',
+    },
+    {
+      question_text: 'Who is widely known as the father of the nation in India?',
+      options: [
+        'jawaharlal nehru',
+        'sardar vallabhbhai patel',
+        'mahatma gandhi',
+        'subhas chandra bose',
+      ],
+      correct_answer: 'mahatma gandhi',
+      explanation: 'Mahatma Gandhi became one of the most influential leaders of India struggle for independence through his philosophy of nonviolence and civil disobedience.',
+    },
+    {
+      question_text: 'Who founded the Indian National Congress along with other leaders in 1885?',
+      options: [
+        'allan octavian hume',
+        'bal gangadhar tilak',
+        'dadabhai naoroji',
+        'gopal krishna gokhale',
+      ],
+      correct_answer: 'allan octavian hume',
+      explanation: 'Allan Octavian Hume, a retired British civil servant, played a leading role in establishing the Indian National Congress in 1885.',
+    },
+    {
+      question_text: 'Which movement was launched by Mahatma Gandhi in 1920?',
+      options: [
+        'quit india movement',
+        'non cooperation movement',
+        'civil disobedience movement',
+        'swadeshi movement',
+      ],
+      correct_answer: 'non cooperation movement',
+      explanation: 'The Non-Cooperation Movement was launched in 1920 to encourage Indians to withdraw cooperation from British institutions and goods.',
+    },
+    {
+      question_text: 'The Jallianwala Bagh massacre took place in which year?',
+      options: ['1915', '1919', '1922', '1930'],
+      correct_answer: '1919',
+      explanation: 'On April 13, 1919, British troops under General Reginald Dyer fired on a large gathering at Jallianwala Bagh in Amritsar.',
+    },
+    {
+      question_text: 'Who led the Salt March in 1930?',
+      options: [
+        'subhas chandra bose',
+        'jawaharlal nehru',
+        'mahatma gandhi',
+        'sardar vallabhbhai patel',
+      ],
+      correct_answer: 'mahatma gandhi',
+      explanation: 'Mahatma Gandhi led the famous Dandi March in 1930 to protest the British salt tax and launch the Civil Disobedience Movement.',
+    },
+    {
+      question_text: "Which movement was launched in 1942 with the famous call 'do or die'?",
+      options: [
+        'swadeshi movement',
+        'non cooperation movement',
+        'quit india movement',
+        'home rule movement',
+      ],
+      correct_answer: 'quit india movement',
+      explanation: "The Quit India Movement was launched by the Indian National Congress in August 1942, with Gandhi giving the famous call to 'do or die'.",
+    },
+    {
+      question_text: 'Who was popularly known as netaji?',
+      options: [
+        'bhagat singh',
+        'subhas chandra bose',
+        'chandra shekhar azad',
+        'lala lajpat rai',
+      ],
+      correct_answer: 'subhas chandra bose',
+      explanation: 'Subhas Chandra Bose was popularly known as Netaji and became a prominent leader who sought to achieve Indian independence through armed struggle.',
+    },
+    {
+      question_text: 'Which organization was led by Subhas Chandra Bose during the struggle against British rule?',
+      options: [
+        'indian national army',
+        'home rule league',
+        'servants of india society',
+        'revolutionary socialist party',
+      ],
+      correct_answer: 'indian national army',
+      explanation: 'Subhas Chandra Bose led the Indian National Army, also known as the Azad Hind Fauj, during the Second World War.',
+    },
+    {
+      question_text: 'Who were the three revolutionaries executed by the British in 1931 for their role in revolutionary activities?',
+      options: [
+        'bhagat singh rajguru and sukhdev',
+        'gandhi nehru and patel',
+        'bose azad and tilak',
+        'naoroji gokhale and rai',
+      ],
+      correct_answer: 'bhagat singh rajguru and sukhdev',
+      explanation: 'Bhagat Singh, Shivaram Rajguru, and Sukhdev Thapar were executed by the British on March 23, 1931.',
+    },
+    {
+      question_text: 'Which act of 1919 allowed the British government to imprison people without trial?',
+      options: [
+        'rowlatt act',
+        'government of india act',
+        'regulating act',
+        'charter act',
+      ],
+      correct_answer: 'rowlatt act',
+      explanation: 'The Rowlatt Act of 1919 gave the colonial government sweeping powers to detain people suspected of revolutionary activities without a normal trial.',
+    },
+    {
+      question_text: 'Who was the first president of the Indian National Congress?',
+      options: [
+        'womesh chandra bonnerjee',
+        'dadabhai naoroji',
+        'surendranath banerjee',
+        'bal gangadhar tilak',
+      ],
+      correct_answer: 'womesh chandra bonnerjee',
+      explanation: 'Womesh Chandra Bonnerjee, also known as W C Bonnerjee, presided over the first session of the Indian National Congress in Bombay in 1885.',
+    },
+    {
+      question_text: 'The partition of Bengal in 1905 led to the growth of which movement?',
+      options: [
+        'quit india movement',
+        'swadeshi movement',
+        'civil disobedience movement',
+        'individual satyagraha',
+      ],
+      correct_answer: 'swadeshi movement',
+      explanation: 'The partition of Bengal in 1905 triggered widespread protests and helped strengthen the Swadeshi Movement, which promoted Indian-made goods and boycotts of British products.',
+    },
+    {
+      question_text: "Who gave the slogan 'swaraj is my birthright and i shall have it'?",
+      options: [
+        'bal gangadhar tilak',
+        'dadabhai naoroji',
+        'lala lajpat rai',
+        'bipin chandra pal',
+      ],
+      correct_answer: 'bal gangadhar tilak',
+      explanation: 'Bal Gangadhar Tilak was a prominent nationalist leader who popularized the demand for Swaraj, meaning self-rule.',
+    },
+    {
+      question_text: 'On which date did India become independent from British rule?',
+      options: [
+        '26 january 1950',
+        '15 august 1947',
+        '9 august 1942',
+        '26 november 1949',
+      ],
+      correct_answer: '15 august 1947',
+      explanation: 'India became independent from British rule on August 15, 1947. Jawaharlal Nehru became the country first prime minister.',
+    },
+  ],
+}
 
-  if (fs.existsSync('.dev.vars')) {
-    const content = fs.readFileSync('.dev.vars', 'utf-8')
-    for (const line of content.split('\n')) {
-      const trimmed = line.trim()
-      if (!trimmed || trimmed.startsWith('#')) continue
-      const idx = trimmed.indexOf('=')
-      if (idx !== -1) {
-        const key = trimmed.slice(0, idx).trim()
-        let val = trimmed.slice(idx + 1).trim()
-        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-          val = val.slice(1, -1)
-        }
-        if (key === 'TURSO_DATABASE_URL') url = val
-        if (key === 'TURSO_AUTH_TOKEN') authToken = val
-      }
-    }
-  }
-
-  if (!url) {
-    console.error('TURSO_DATABASE_URL not configured.')
-    process.exit(1)
-  }
-
-  const client = createClient({ url, authToken })
+/**
+ * Helper to seed a single quiz and its questions idempotently.
+ */
+async function seedQuizRecord(client: Client, seedData: QuizSeedData) {
   const now = Math.floor(Date.now() / 1000)
+  const qData = seedData.quiz
 
-  console.log('🚀 Seeding Space Trivia Quiz...')
+  console.log(`🚀 Seeding quiz: "${qData.title}"...`)
 
-  // 1. Fetch relevant tag IDs for mapping (space, astronomy, science)
+  // 1. Fetch relevant tag IDs for mapping
+  const tagPlaceholders = seedData.tagNames.map(() => '?').join(',')
   const tagRows = await client.execute({
-    sql: `SELECT id, name FROM tags WHERE name IN ('space', 'astronomy', 'science');`,
+    sql: `SELECT id, name FROM tags WHERE name IN (${tagPlaceholders});`,
+    args: seedData.tagNames,
   })
   const tagIds = tagRows.rows.map((r: any) => Number(r.id))
 
   // 2. Insert or update the quiz
-  const qData = SPACE_TRIVIA_DATA.quiz
   await client.execute({
     sql: `
       INSERT INTO quizzes (
@@ -178,16 +350,15 @@ export async function seedSpaceTriviaQuiz() {
     ],
   })
 
-  console.log(`✓ Quiz "${qData.title}" created/updated.`)
+  console.log(`✓ Quiz record "${qData.title}" created/updated.`)
 
-  // 3. Insert questions and link them to the quiz and tags
-  let questionCount = 0
-
-  for (let i = 0; i < SPACE_TRIVIA_DATA.questions.length; i++) {
-    const q = SPACE_TRIVIA_DATA.questions[i]
+  // 3. Insert/update questions and link them
+  let count = 0
+  for (let i = 0; i < seedData.questions.length; i++) {
+    const q = seedData.questions[i]
     const optionsJson = JSON.stringify(q.options)
 
-    // Check if question already exists by question_text
+    // Check if question exists
     const existing = await client.execute({
       sql: `SELECT id FROM questions WHERE question_text = ? LIMIT 1;`,
       args: [q.question_text],
@@ -197,7 +368,6 @@ export async function seedSpaceTriviaQuiz() {
 
     if (existing.rows.length > 0) {
       questionId = Number(existing.rows[0].id)
-      // Update options and correct answer
       await client.execute({
         sql: `UPDATE questions SET options = ?, correct_answer = ?, explanation = ?, updated_at = ? WHERE id = ?;`,
         args: [optionsJson, q.correct_answer, q.explanation, now, questionId],
@@ -210,7 +380,7 @@ export async function seedSpaceTriviaQuiz() {
       questionId = Number(inserted.lastInsertRowid)
     }
 
-    // 4. Map question to quiz in quiz_questions
+    // Link question to quiz in quiz_questions
     const existingLink = await client.execute({
       sql: `SELECT id FROM quiz_questions WHERE quiz_id = ? AND question_id = ? LIMIT 1;`,
       args: [qData.id, questionId],
@@ -228,7 +398,7 @@ export async function seedSpaceTriviaQuiz() {
       })
     }
 
-    // 5. Attach tags to question
+    // Attach tags to question
     for (const tId of tagIds) {
       await client.execute({
         sql: `INSERT OR IGNORE INTO question_tags (question_id, tag_id, created_at) VALUES (?, ?, ?);`,
@@ -236,10 +406,169 @@ export async function seedSpaceTriviaQuiz() {
       })
     }
 
-    questionCount++
+    count++
   }
 
-  console.log(`🎉 Space Trivia Quiz seeded with ${questionCount} questions and mapped tags!`)
+  console.log(`🎉 Quiz "${qData.title}" seeded with ${count} questions and mapped tags!`)
+}
+
+function getTursoClient() {
+  let url = process.env.TURSO_DATABASE_URL
+  let authToken = process.env.TURSO_AUTH_TOKEN
+
+  if (fs.existsSync('.dev.vars')) {
+    const content = fs.readFileSync('.dev.vars', 'utf-8')
+    for (const line of content.split('\n')) {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) continue
+      const idx = trimmed.indexOf('=')
+      if (idx !== -1) {
+        const key = trimmed.slice(0, idx).trim()
+        let val = trimmed.slice(idx + 1).trim()
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.slice(1, -1)
+        }
+        if (key === 'TURSO_DATABASE_URL') url = val
+        if (key === 'TURSO_AUTH_TOKEN') authToken = val
+      }
+    }
+  }
+
+  if (!url) {
+    console.error('TURSO_DATABASE_URL not configured.')
+    process.exit(1)
+  }
+
+  return createClient({ url, authToken })
+}
+
+export const WORLD_GEOGRAPHY_DATA: QuizSeedData = {
+  quiz: {
+    id: 'world-geography-and-landmarks',
+    title: 'World Geography and Landmarks',
+    slug: 'world-geography-and-landmarks',
+    description: 'Test your knowledge of countries, cities, famous landmarks, monuments, and amazing places around the world',
+    category: 'geography',
+    difficulty: 'easy',
+    timeLimitSeconds: 300,
+    rewardXp: 150,
+    isActive: true,
+  },
+  tagNames: ['geography', 'countries', 'capitals', 'landmarks'],
+  questions: [
+    {
+      question_text: 'Which country is home to the Eiffel Tower?',
+      options: ['italy', 'france', 'spain', 'germany'],
+      correct_answer: 'france',
+      explanation: "The Eiffel Tower is one of the world's most famous landmarks and is located in Paris, France.",
+    },
+    {
+      question_text: 'What is the capital city of Japan?',
+      options: ['kyoto', 'osaka', 'tokyo', 'hiroshima'],
+      correct_answer: 'tokyo',
+      explanation: 'Tokyo is the capital and largest metropolitan area of Japan.',
+    },
+    {
+      question_text: 'In which country would you find the Great Wall?',
+      options: ['china', 'japan', 'india', 'south korea'],
+      correct_answer: 'china',
+      explanation: 'The Great Wall is a vast series of fortifications built across northern China over many centuries.',
+    },
+    {
+      question_text: 'Which city is famous for the Statue of Liberty?',
+      options: ['los angeles', 'chicago', 'new york city', 'boston'],
+      correct_answer: 'new york city',
+      explanation: 'The Statue of Liberty stands on Liberty Island in New York Harbor.',
+    },
+    {
+      question_text: 'Which country is shaped somewhat like a boot?',
+      options: ['greece', 'italy', 'portugal', 'norway'],
+      correct_answer: 'italy',
+      explanation: 'Italy is famously described as having a boot-shaped peninsula extending into the Mediterranean Sea.',
+    },
+    {
+      question_text: 'Where would you find the pyramids of giza?',
+      options: ['egypt', 'mexico', 'peru', 'turkey'],
+      correct_answer: 'egypt',
+      explanation: 'The famous Pyramids of Giza are located near Cairo, Egypt.',
+    },
+    {
+      question_text: 'Which is the largest ocean on earth?',
+      options: ['atlantic ocean', 'indian ocean', 'arctic ocean', 'pacific ocean'],
+      correct_answer: 'pacific ocean',
+      explanation: 'The Pacific Ocean is the largest and deepest ocean on Earth.',
+    },
+    {
+      question_text: 'Which city is known as the city of canals?',
+      options: ['venice', 'paris', 'rome', 'vienna'],
+      correct_answer: 'venice',
+      explanation: 'Venice, Italy, is famous for its network of canals and waterways instead of conventional roads in many parts of the city.',
+    },
+    {
+      question_text: 'Mount everest is located in which mountain range?',
+      options: ['alps', 'rocky mountains', 'himalayas', 'andes'],
+      correct_answer: 'himalayas',
+      explanation: "Mount Everest is the world's highest mountain above sea level and is part of the Himalayan mountain range.",
+    },
+    {
+      question_text: 'Which country is home to the taj mahal?',
+      options: ['india', 'pakistan', 'bangladesh', 'nepal'],
+      correct_answer: 'india',
+      explanation: 'The Taj Mahal is a famous white marble monument in Agra, India, built by Mughal emperor Shah Jahan.',
+    },
+    {
+      question_text: 'What is the capital city of australia?',
+      options: ['sydney', 'melbourne', 'perth', 'canberra'],
+      correct_answer: 'canberra',
+      explanation: 'Canberra is the capital of Australia, while Sydney and Melbourne are two of its largest and best-known cities.',
+    },
+    {
+      question_text: 'Which famous landmark is located in rio de janeiro?',
+      options: ['big ben', 'christ the redeemer', 'colosseum', 'burj khalifa'],
+      correct_answer: 'christ the redeemer',
+      explanation: 'Christ the Redeemer is a huge statue overlooking Rio de Janeiro in Brazil.',
+    },
+    {
+      question_text: 'Which country is home to the colosseum?',
+      options: ['italy', 'greece', 'france', 'croatia'],
+      correct_answer: 'italy',
+      explanation: 'The Colosseum is an ancient Roman amphitheater located in the city of Rome, Italy.',
+    },
+    {
+      question_text: 'Which desert is the largest hot desert in the world?',
+      options: ['gobi desert', 'sahara desert', 'thar desert', 'kalahari desert'],
+      correct_answer: 'sahara desert',
+      explanation: 'The Sahara is the world largest hot desert and covers a huge area of northern Africa.',
+    },
+    {
+      question_text: 'Which city is home to the famous big ben clock tower?',
+      options: ['london', 'dublin', 'edinburgh', 'manchester'],
+      correct_answer: 'london',
+      explanation: 'Big Ben is the nickname commonly used for the great bell inside the Elizabeth Tower at the Palace of Westminster in London.',
+    },
+  ],
+}
+
+export async function seedSpaceTriviaQuiz() {
+  const client = getTursoClient()
+  await seedQuizRecord(client, SPACE_TRIVIA_DATA)
+}
+
+export async function seedIndianFreedomStruggleQuiz() {
+  const client = getTursoClient()
+  await seedQuizRecord(client, INDIAN_FREEDOM_STRUGGLE_DATA)
+}
+
+export async function seedWorldGeographyQuiz() {
+  const client = getTursoClient()
+  await seedQuizRecord(client, WORLD_GEOGRAPHY_DATA)
+}
+
+export async function seedAllQuizzes() {
+  const client = getTursoClient()
+  await seedQuizRecord(client, SPACE_TRIVIA_DATA)
+  await seedQuizRecord(client, INDIAN_FREEDOM_STRUGGLE_DATA)
+  await seedQuizRecord(client, WORLD_GEOGRAPHY_DATA)
 }
 
 if (
@@ -247,8 +576,8 @@ if (
   process.argv[1]?.endsWith('seed-quizzes.js') ||
   process.argv[1]?.endsWith('seed-quizzes.mjs')
 ) {
-  seedSpaceTriviaQuiz().catch((err) => {
-    console.error('Fatal error seeding space trivia quiz:', err)
+  seedAllQuizzes().catch((err) => {
+    console.error('Fatal error seeding quizzes:', err)
     process.exit(1)
   })
 }
