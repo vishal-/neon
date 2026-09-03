@@ -151,10 +151,6 @@ export const Header: FC<HeaderProps> = ({ onSwitchTab }) => {
                 <div className="drawer-cadet-rank">Level 1 • 350 / 500 XP</div>
               </div>
             </div>
-            <div className="drawer-streak-pill">
-              <span>🔥 7 Day Streak</span>
-              <span style={{ color: 'var(--neon-gold)' }}>★ Silver Rank</span>
-            </div>
           </Link>
         ) : (
           <Link

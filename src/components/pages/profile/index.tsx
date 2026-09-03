@@ -11,6 +11,8 @@ export interface UserProfile {
   image?: string | null
   avatarUrl?: string
   createdAt?: string | Date
+  totalXp?: number
+  level?: number
 }
 
 export const ProfilePage: FC = () => {
@@ -167,11 +169,8 @@ export const ProfilePage: FC = () => {
                 />
               </div>
 
+
               <div className="flex-grow-1">
-                <div className="d-flex flex-wrap justify-content-center justify-content-sm-start gap-2 mb-2">
-                  <span className="badge rounded-pill text-bg-primary">🌟 Level 1 Cadet</span>
-                  <span className="badge rounded-pill text-bg-success">✓ Verified Account</span>
-                </div>
                 <h1 id="profileDisplayName" className="h3 fw-bold mb-1">
                   {cadetName}
                 </h1>
@@ -246,45 +245,24 @@ export const ProfilePage: FC = () => {
               </div>
 
               <div className="row g-3">
-                <div className="col-12 col-sm-6">
+                <div className="col-12 col-md-4">
                   <div className="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25 h-100">
                     <div className="text-muted small text-uppercase fw-bold mb-1" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>Email Address</div>
                     <div className="text-info text-break fw-semibold">{email}</div>
                   </div>
                 </div>
 
-                <div className="col-12 col-sm-6">
-                  <div className="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25 h-100">
-                    <div className="text-muted small text-uppercase fw-bold mb-1" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>Cadet ID</div>
-                    <code className="text-light" style={{ fontSize: '0.85rem' }}>{user.id ? `${user.id.substring(0, 18)}...` : 'Cadet'}</code>
-                  </div>
-                </div>
-
-                <div className="col-12 col-sm-6">
+                <div className="col-12 col-md-4">
                   <div className="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25 h-100">
                     <div className="text-muted small text-uppercase fw-bold mb-1" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>Member Since</div>
                     <div className="text-light fw-semibold">{memberSince}</div>
                   </div>
                 </div>
 
-                <div className="col-12 col-sm-6">
-                  <div className="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25 h-100">
-                    <div className="text-muted small text-uppercase fw-bold mb-1" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>Security Method</div>
-                    <div className="text-light fw-semibold">🚀 Passwordless Email OTP</div>
-                  </div>
-                </div>
-
-                <div className="col-12 col-sm-6">
+                <div className="col-12 col-md-4">
                   <div className="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25 h-100">
                     <div className="text-muted small text-uppercase fw-bold mb-1" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>Total Cosmic XP</div>
-                    <span className="badge text-bg-warning fw-bold">✨ 350 / 500 XP (Level 1)</span>
-                  </div>
-                </div>
-
-                <div className="col-12 col-sm-6">
-                  <div className="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25 h-100">
-                    <div className="text-muted small text-uppercase fw-bold mb-1" style={{ fontSize: '0.72rem', letterSpacing: '0.05em' }}>Daily Streak</div>
-                    <span className="badge text-bg-danger fw-bold">🔥 7 Days Active</span>
+                    <span className="badge text-bg-warning fw-bold fs-6">✨ {user.totalXp ?? 0} XP (Level {user.level ?? 1})</span>
                   </div>
                 </div>
               </div>

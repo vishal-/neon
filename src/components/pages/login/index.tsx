@@ -149,7 +149,7 @@ export const LoginPage: FC = () => {
               </h1>
               <p className="text-muted small mb-0">
                 {step === 'email'
-                  ? 'Sign in to log quests, track XP streaks, and access Mission Control.'
+                  ? 'Sign in to log quests, earn cosmic XP, and access Mission Control.'
                   : 'A 6-digit one-time passkey was transmitted to your inbox.'}
               </p>
             </div>

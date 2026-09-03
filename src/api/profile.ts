@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
 import { getDb, user as userTable } from '../db'
 import { createAuth, type AuthEnv } from '../lib/auth'
+import { getUserXp } from '../lib/xp'
 
 export type ProfileEnv = {
   Bindings: AuthEnv
@@ -26,6 +27,9 @@ profileApi.get('/', async (c) => {
   const email = session.user.email
   const avatarUrl = `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${encodeURIComponent(email.trim().toLowerCase())}`
 
+  const db = getDb(c.env)
+  const xpData = await getUserXp(db, session.user.id).catch(() => ({ totalXp: 0, level: 1 }))
+
   return c.json({
     success: true,
     user: {
@@ -35,6 +39,8 @@ profileApi.get('/', async (c) => {
       avatarUrl,
       emailVerified: session.user.emailVerified,
       createdAt: session.user.createdAt,
+      totalXp: xpData.totalXp,
+      level: xpData.level,
     },
   })
 })

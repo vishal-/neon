@@ -524,18 +524,6 @@ textarea:-webkit-autofill:focus {
   color: var(--text-secondary);
 }
 
-.drawer-streak-pill {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(6, 10, 22, 0.7);
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--color-gold);
-}
-
 /* Drawer Nav List */
 .drawer-nav {
   padding: 0 16px;
