@@ -216,6 +216,20 @@ export const Header: FC<HeaderProps> = ({ onSwitchTab }) => {
                 <span className="drawer-badge badge-green">COPPA</span>
               </button>
             </li>
+            <li>
+              <Link
+                to="/boss"
+                className="drawer-link-btn"
+                style={{ textDecoration: 'none' }}
+                onClick={() => setDrawerOpen(false)}
+              >
+                <div className="drawer-link-icon icon-purple">
+                  <Icon icon={Icons.settings} size={18} />
+                </div>
+                <span>Boss Mission Control</span>
+                <span className="drawer-badge badge-purple">Admin</span>
+              </Link>
+            </li>
           </ul>
         </nav>
 

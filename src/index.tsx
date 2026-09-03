@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { checkApi } from './api/check'
 import { profileApi } from './api/profile'
 import { otpApi } from './api/otp'
+import { bossApi } from './api/boss'
 import { createAuth, type AuthEnv } from './lib/auth'
 
 export type AppEnv = {
@@ -20,6 +21,7 @@ app.on(['POST', 'GET'], '/api/auth/**', (c) => {
 app.route('/api/check', checkApi)
 app.route('/api/profile', profileApi)
 app.route('/api/otp', otpApi)
+app.route('/api/boss', bossApi)
 
 export default app
 

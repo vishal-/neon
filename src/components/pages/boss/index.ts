@@ -1,0 +1,7 @@
+export { BossLayout } from './boss-layout'
+export { BossDashboard } from './boss-dashboard'
+export { ManageQuizzesPage } from './manage-quizzes'
+export { EditQuizPage } from './edit-quiz'
+export { ManageQuestionsPage } from './manage-questions'
+export { EditQuestionPage } from './edit-question'
+export { ManageTagsPage } from './manage-tags'

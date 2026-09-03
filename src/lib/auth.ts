@@ -27,6 +27,16 @@ export function createAuth(env?: AuthEnv) {
         verification: schema.verification,
       },
     }),
+    user: {
+      additionalFields: {
+        isBoss: {
+          type: 'boolean',
+          required: false,
+          defaultValue: false,
+          input: false,
+        },
+      },
+    },
     secret:
       env?.BETTER_AUTH_SECRET ||
       (typeof process !== 'undefined' ? process.env?.BETTER_AUTH_SECRET : '') ||

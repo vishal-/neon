@@ -127,3 +127,44 @@ export type NewAttempt = typeof attempts.$inferInsert
 export type AttemptAnswer = typeof attemptAnswers.$inferSelect
 export type NewAttemptAnswer = typeof attemptAnswers.$inferInsert
 
+/**
+ * Tags Table
+ * Categorization tags that can be mapped to questions.
+ */
+export const tags = sqliteTable('tags', {
+  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+  name: text('name').notNull().unique(),
+  slug: text('slug').notNull().unique(),
+  description: text('description'),
+  color: text('color').notNull().default('teal'), // supports cosmic colors: teal, purple, rose, gold, blue
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+})
+
+/**
+ * Questions-Tags Join Table
+ * Associates reusable questions with tags (many-to-many).
+ */
+export const questionTags = sqliteTable('question_tags', {
+  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+  questionId: integer('question_id')
+    .notNull()
+    .references(() => questions.id, { onDelete: 'cascade' }),
+  tagId: integer('tag_id')
+    .notNull()
+    .references(() => tags.id, { onDelete: 'cascade' }),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .$defaultFn(() => new Date()),
+})
+
+export type Tag = typeof tags.$inferSelect
+export type NewTag = typeof tags.$inferInsert
+
+export type QuestionTag = typeof questionTags.$inferSelect
+export type NewQuestionTag = typeof questionTags.$inferInsert
+
