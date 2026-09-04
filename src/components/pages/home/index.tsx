@@ -1,7 +1,20 @@
-import { useState, type FC } from 'react'
+import { useState, useEffect, type FC } from 'react'
+import { Link } from 'react-router-dom'
 import { Icon } from '../../ui/icon'
 import { Icons } from '../../ui/icons'
 import { Header } from '../../common'
+
+interface LatestQuizMeta {
+  id: string
+  title: string
+  slug: string
+  description?: string
+  category: string
+  difficulty: string
+  timeLimitSeconds: number
+  rewardXp: number
+  questionCount: number
+}
 
 interface QuizQuestionItem {
   question: string
@@ -47,6 +60,20 @@ const initialMemoryCards: MemoryCardItem[] = [
 export const HomePage: FC = () => {
   const [activeTab, setActiveTab] = useState<'hq' | 'games' | 'journey' | 'parents'>('hq')
   const [activeArcadeTab, setActiveArcadeTab] = useState<'quiz' | 'memory' | 'pattern'>('quiz')
+
+  // Dynamic Latest Quiz State
+  const [latestQuiz, setLatestQuiz] = useState<LatestQuizMeta | null>(null)
+
+  useEffect(() => {
+    fetch('/api/quizzes/latest')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.quiz) {
+          setLatestQuiz(data.quiz)
+        }
+      })
+      .catch((err) => console.error('Failed to load latest quiz mission:', err))
+  }, [])
 
   // Quiz Whiz State
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0)
@@ -216,21 +243,49 @@ export const HomePage: FC = () => {
               </div>
             </div>
 
-            {/* Today's Featured Cosmic Vortex Challenge */}
+            {/* Today's Featured Cosmic Quest Challenge */}
             <div className="spotlight-challenge-card" id="daily-challenge">
               <div className="challenge-header">
                 <div className="challenge-tag-row">
-                  <span className="challenge-tag">TODAY'S COSMIC QUEST</span>
+                  <span className="challenge-tag">TODAY'S FEATURED QUEST</span>
                   <div className="stars-glow-row">★★★</div>
                 </div>
-                <span className="reward-badge">+50 XP</span>
+                <span className="reward-badge">+{latestQuiz ? latestQuiz.rewardXp : 150} XP</span>
               </div>
 
-              <h3 className="challenge-main-title">COSMIC PUZZLE: THE GALAXY VORTEX</h3>
+              <h3 className="challenge-main-title text-uppercase">
+                {latestQuiz ? latestQuiz.title : 'COSMIC TRIVIA MISSION'}
+              </h3>
               <p className="challenge-desc">
-                Decipher the starry planetary vortex and align the cosmic constellation nodes to unlock the Nebula
-                Gates!
+                {latestQuiz?.description ||
+                  'Test your knowledge across planets, history, geography, and science to level up your cadet rank!'}
               </p>
+
+              {/* Dynamic Meta Chips */}
+              {latestQuiz && (
+                <div className="d-flex flex-wrap gap-2 my-2 align-items-center">
+                  <span className="badge text-bg-primary text-uppercase px-2 py-1">
+                    {latestQuiz.category}
+                  </span>
+                  <span
+                    className={`badge px-2 py-1 text-capitalize ${
+                      latestQuiz.difficulty === 'easy'
+                        ? 'text-bg-success'
+                        : latestQuiz.difficulty === 'hard'
+                        ? 'text-bg-danger'
+                        : 'text-bg-warning'
+                    }`}
+                  >
+                    {latestQuiz.difficulty} Tier
+                  </span>
+                  <span className="badge text-bg-secondary px-2 py-1">
+                    ⏱ {Math.round((latestQuiz.timeLimitSeconds || 300) / 60)} Mins
+                  </span>
+                  <span className="badge text-bg-secondary px-2 py-1">
+                    ❓ {latestQuiz.questionCount} Questions
+                  </span>
+                </div>
+              )}
 
               <div className="galaxy-vortex-visual">
                 <div className="vortex-core"></div>
@@ -240,17 +295,20 @@ export const HomePage: FC = () => {
                 <div className="vortex-planet p-3" title="Rocket">🚀</div>
               </div>
 
-              <div className="challenge-action-wrap">
-                <button
-                  className="btn-primary full-width"
-                  onClick={() => {
-                    handleSwitchTab('games')
-                    setActiveArcadeTab('quiz')
-                  }}
+              <div className="challenge-action-wrap d-flex flex-column gap-2">
+                <Link
+                  to={latestQuiz ? `/quiz/${latestQuiz.slug}` : '/quizzes'}
+                  className="btn-primary full-width d-flex justify-content-center align-items-center gap-2 text-decoration-none"
                 >
-                  <span>Launch Today's Quest Demo</span>
-                  <Icon icon={Icons.gamepad} size={18} />
-                </button>
+                  <span>Launch Today's Quest</span>
+                  <Icon icon={Icons.rocketLaunch} size={18} />
+                </Link>
+                <Link
+                  to="/quizzes"
+                  className="text-info text-decoration-none text-center small fw-semibold py-1"
+                >
+                  Browse all galactic quizzes →
+                </Link>
               </div>
             </div>
 
@@ -472,6 +530,20 @@ export const HomePage: FC = () => {
                         </span>
                       </div>
                     )}
+
+                    {/* Directory Quick-link Banner */}
+                    <div className="mt-3 p-3 bg-dark bg-opacity-75 border border-info border-opacity-25 rounded-3 d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                      <div className="small text-light">
+                        🚀 Ready for full-length timed missions with XP rewards?
+                      </div>
+                      <Link
+                        to="/quizzes"
+                        className="btn btn-outline-info btn-sm fw-bold d-inline-flex align-items-center gap-1 text-decoration-none"
+                      >
+                        <span>Browse All Quizzes</span>
+                        <Icon icon={Icons.sparkles} size={16} />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               )}

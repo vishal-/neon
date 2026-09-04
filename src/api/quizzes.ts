@@ -30,6 +30,111 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 /**
+ * GET /api/quizzes/latest
+ * Fetch the latest published active quiz.
+ */
+quizzesApi.get('/latest', async (c) => {
+  const db = getDb(c.env)
+  const [latestQuiz] = await db
+    .select()
+    .from(quizzesTable)
+    .where(eq(quizzesTable.isActive, true))
+    .orderBy(desc(quizzesTable.createdAt))
+    .limit(1)
+
+  if (!latestQuiz) {
+    return c.json({ success: false, quiz: null })
+  }
+
+  // Count questions
+  const mapped = await db
+    .select({ questionId: quizQuestionsTable.questionId })
+    .from(quizQuestionsTable)
+    .where(eq(quizQuestionsTable.quizId, latestQuiz.id))
+
+  return c.json({
+    success: true,
+    quiz: {
+      id: latestQuiz.id,
+      title: latestQuiz.title,
+      slug: latestQuiz.slug,
+      description: latestQuiz.description,
+      category: latestQuiz.category,
+      difficulty: latestQuiz.difficulty,
+      timeLimitSeconds: latestQuiz.timeLimitSeconds,
+      rewardXp: latestQuiz.rewardXp,
+      questionCount: mapped.length,
+      createdAt: latestQuiz.createdAt,
+    },
+  })
+})
+
+/**
+ * GET /api/quizzes
+ * Fetch all published active quizzes with filtering options.
+ */
+quizzesApi.get('/', async (c) => {
+  const db = getDb(c.env)
+  const category = c.req.query('category')
+  const difficulty = c.req.query('difficulty')
+  const search = c.req.query('search')?.toLowerCase().trim()
+
+  const allActive = await db
+    .select()
+    .from(quizzesTable)
+    .where(eq(quizzesTable.isActive, true))
+    .orderBy(desc(quizzesTable.createdAt))
+
+  // Fetch all quiz-question counts
+  const allLinks = await db
+    .select({
+      quizId: quizQuestionsTable.quizId,
+    })
+    .from(quizQuestionsTable)
+
+  const countMap = new Map<string, number>()
+  for (const link of allLinks) {
+    countMap.set(link.quizId, (countMap.get(link.quizId) || 0) + 1)
+  }
+
+  let filtered = allActive.map((q) => ({
+    id: q.id,
+    title: q.title,
+    slug: q.slug,
+    description: q.description,
+    category: q.category,
+    difficulty: q.difficulty,
+    timeLimitSeconds: q.timeLimitSeconds,
+    rewardXp: q.rewardXp,
+    questionCount: countMap.get(q.id) || 0,
+    createdAt: q.createdAt,
+  }))
+
+  if (category && category !== 'all') {
+    filtered = filtered.filter((q) => q.category === category)
+  }
+
+  if (difficulty && difficulty !== 'all') {
+    filtered = filtered.filter((q) => q.difficulty === difficulty)
+  }
+
+  if (search) {
+    filtered = filtered.filter(
+      (q) =>
+        q.title.toLowerCase().includes(search) ||
+        (q.description && q.description.toLowerCase().includes(search)) ||
+        q.category.toLowerCase().includes(search)
+    )
+  }
+
+  return c.json({
+    success: true,
+    quizzes: filtered,
+    total: filtered.length,
+  })
+})
+
+/**
  * GET /api/quizzes/:slug/briefing
  * Public briefing info before starting the quiz.
  */

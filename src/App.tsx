@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { HomePage } from './components/pages/home'
 import { LoginPage } from './components/pages/login'
 import { ProfilePage } from './components/pages/profile'
-import { QuizPlayerPage } from './components/pages/quiz'
+import { QuizPlayerPage, QuizListPage } from './components/pages/quiz'
 import {
   BossDashboard,
   ManageQuizzesPage,
@@ -18,6 +18,7 @@ export function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/quizzes" element={<QuizListPage />} />
       <Route path="/quiz/:slug" element={<QuizPlayerPage />} />
 
       {/* Boss Admin Suite Routes */}

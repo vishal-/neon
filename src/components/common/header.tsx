@@ -186,6 +186,20 @@ export const Header: FC<HeaderProps> = ({ onSwitchTab }) => {
               </button>
             </li>
             <li>
+              <Link
+                to="/quizzes"
+                className="drawer-link-btn"
+                style={{ textDecoration: 'none' }}
+                onClick={() => setDrawerOpen(false)}
+              >
+                <div className="drawer-link-icon icon-gold">
+                  <Icon icon={Icons.sparkles} size={18} />
+                </div>
+                <span>Cosmic Quizzes</span>
+                <span className="drawer-badge badge-gold">Quests</span>
+              </Link>
+            </li>
+            <li>
               <button className="drawer-link-btn" onClick={() => handleTabClick('games')}>
                 <div className="drawer-link-icon icon-pink">
                   <Icon icon={Icons.gamepad} size={18} />
