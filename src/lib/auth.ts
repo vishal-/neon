@@ -27,6 +27,11 @@ export function createAuth(env?: AuthEnv) {
         verification: schema.verification,
       },
     }),
+    advanced: {
+      database: {
+        generateId: 'uuid',
+      },
+    },
     user: {
       additionalFields: {
         isBoss: {
