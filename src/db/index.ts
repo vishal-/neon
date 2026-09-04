@@ -12,8 +12,11 @@ export interface TursoEnv {
 export function getDb(env?: TursoEnv) {
   const url =
     env?.TURSO_DATABASE_URL ||
-    (typeof process !== 'undefined' ? process.env?.TURSO_DATABASE_URL : '') ||
-    'file:local.db'
+    (typeof process !== 'undefined' ? process.env?.TURSO_DATABASE_URL : '')
+
+  if (!url) {
+    throw new Error('FATAL: TURSO_DATABASE_URL is not configured.')
+  }
 
   const authToken =
     env?.TURSO_AUTH_TOKEN ||

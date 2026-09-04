@@ -402,6 +402,15 @@ quizzesApi.post('/:slug/start', async (c) => {
  * Strictly verifies server-side expiration and upserts latest answer.
  */
 quizzesApi.post('/attempts/:attemptId/answer', async (c) => {
+  const auth = createAuth(c.env)
+  const session = await auth.api.getSession({
+    headers: c.req.raw.headers,
+  })
+
+  if (!session?.user?.id) {
+    return c.json({ error: 'Unauthorized', message: 'Authentication required to answer quest questions' }, 401)
+  }
+
   const db = getDb(c.env)
   const attemptId = c.req.param('attemptId')
   const body = await c.req.json().catch(() => ({}))
@@ -419,6 +428,11 @@ quizzesApi.post('/attempts/:attemptId/answer', async (c) => {
 
   if (!attempt) {
     return c.json({ error: 'Not Found', message: 'Attempt session not found' }, 404)
+  }
+
+  // IDOR Protection: ensure current user owns this attempt
+  if (attempt.userId !== session.user.id) {
+    return c.json({ error: 'Forbidden', message: 'Access denied: you do not own this attempt session' }, 403)
   }
 
   if (attempt.status !== 'in_progress') {
@@ -479,6 +493,15 @@ quizzesApi.post('/attempts/:attemptId/answer', async (c) => {
  * updates the attempt record, awards XP via the ledger, and returns the debrief.
  */
 quizzesApi.post('/attempts/:attemptId/submit', async (c) => {
+  const auth = createAuth(c.env)
+  const session = await auth.api.getSession({
+    headers: c.req.raw.headers,
+  })
+
+  if (!session?.user?.id) {
+    return c.json({ error: 'Unauthorized', message: 'Authentication required to submit quiz attempt' }, 401)
+  }
+
   const db = getDb(c.env)
   const attemptId = c.req.param('attemptId')
 
@@ -489,6 +512,22 @@ quizzesApi.post('/attempts/:attemptId/submit', async (c) => {
 
   if (!attempt) {
     return c.json({ error: 'Not Found', message: 'Attempt session not found' }, 404)
+  }
+
+  // IDOR Protection: ensure current user owns this attempt
+  if (attempt.userId !== session.user.id) {
+    return c.json({ error: 'Forbidden', message: 'Access denied: you do not own this attempt session' }, 403)
+  }
+
+  // Replay Protection: reject attempts already completed
+  if (attempt.status === 'completed') {
+    return c.json(
+      {
+        error: 'Conflict',
+        message: 'This quiz attempt has already been submitted and completed.',
+      },
+      400
+    )
   }
 
   const [quiz] = await db
@@ -591,14 +630,15 @@ quizzesApi.post('/attempts/:attemptId/submit', async (c) => {
         userId: attempt.userId,
         amount: totalXpAwarded,
         activityType: 'quiz',
-        activityId: quiz.id,
+        activityId: attempt.id,
         description: `Completed Quiz: ${quiz.title}`,
         metadata: {
+          quizId: quiz.id,
           score,
           totalQuestions,
           percentage,
           timeTakenSeconds,
-          attemptId,
+          attemptId: attempt.id,
         },
       })
     } catch (err) {

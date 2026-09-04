@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, and } from 'drizzle-orm'
 import {
   xpTransactions,
   userXp,
@@ -47,6 +47,32 @@ export async function awardXp(
 
   if (amount <= 0) {
     throw new Error('XP award amount must be greater than 0')
+  }
+
+  // Idempotency check: prevent duplicate XP awards for the same activity
+  if (activityId) {
+    const [existingTx] = await db
+      .select()
+      .from(xpTransactions)
+      .where(
+        and(
+          eq(xpTransactions.userId, userId),
+          eq(xpTransactions.activityType, activityType),
+          eq(xpTransactions.activityId, activityId)
+        )
+      )
+      .limit(1)
+
+    if (existingTx) {
+      const userXpRow = await getUserXp(db, userId)
+      return {
+        success: true,
+        awarded: 0,
+        totalXp: userXpRow.totalXp,
+        level: userXpRow.level,
+        transactionId: existingTx.id,
+      }
+    }
   }
 
   // 1. Insert transaction into the immutable ledger

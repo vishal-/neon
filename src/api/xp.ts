@@ -57,8 +57,16 @@ xpApi.post('/award', async (c) => {
     return c.json({ error: 'Unauthorized', message: 'Sign in to earn XP' }, 401)
   }
 
+  // Critical fix: Prevent arbitrary client XP self-awarding. Restrict manual award endpoint strictly to Boss admins.
+  if (!session.user.isBoss) {
+    return c.json(
+      { error: 'Forbidden', message: 'Admin privileges required to manually award XP.' },
+      403
+    )
+  }
+
   const body = await c.req.json().catch(() => ({}))
-  const { amount, activityType, activityId, description, metadata } = body
+  const { amount, activityType, activityId, description, metadata, userId: targetUserId } = body
 
   if (typeof amount !== 'number' || amount <= 0) {
     return c.json({ error: 'Validation Error', message: 'Valid positive amount required' }, 400)
@@ -80,8 +88,13 @@ xpApi.post('/award', async (c) => {
 
   try {
     const db = getDb(c.env)
+    const recipientUserId =
+      typeof targetUserId === 'string' && targetUserId.trim()
+        ? targetUserId.trim()
+        : session.user.id
+
     const result = await awardXp(db, {
-      userId: session.user.id,
+      userId: recipientUserId,
       amount: Math.min(amount, 1000), // Cap single transaction at 1000 XP
       activityType: activityType as XpActivityType,
       activityId: activityId ? String(activityId) : undefined,

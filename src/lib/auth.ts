@@ -17,6 +17,13 @@ export function createAuth(env?: AuthEnv) {
   const resendApiKey = env?.RESEND_API_KEY || (typeof process !== 'undefined' ? process.env?.RESEND_API_KEY : '') || ''
   const resend = new Resend(resendApiKey)
 
+  const authSecret =
+    env?.BETTER_AUTH_SECRET ||
+    (typeof process !== 'undefined' ? process.env?.BETTER_AUTH_SECRET : '')
+  if (!authSecret) {
+    throw new Error('FATAL: BETTER_AUTH_SECRET environment variable is missing.')
+  }
+
   return betterAuth({
     database: drizzleAdapter(db, {
       provider: 'sqlite',
@@ -42,16 +49,14 @@ export function createAuth(env?: AuthEnv) {
         },
       },
     },
-    secret:
-      env?.BETTER_AUTH_SECRET ||
-      (typeof process !== 'undefined' ? process.env?.BETTER_AUTH_SECRET : '') ||
-      'neon-activities-cosmic-secret-key-32chars-min',
+    secret: authSecret,
     baseURL:
       env?.BETTER_AUTH_URL ||
       (typeof process !== 'undefined' ? process.env?.BETTER_AUTH_URL : '') ||
       'http://localhost:5173',
     plugins: [
       emailOTP({
+        storeOTP: 'hashed',
         async sendVerificationOTP({ email, otp, type: _type }) {
           const { subject, html, text } = renderOtpEmail({
             otp,
